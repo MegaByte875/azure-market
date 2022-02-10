@@ -1,0 +1,262 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "networkSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Network settings object"
+      }
+    },
+    "applicationGatewaySettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Application Gateway settings"
+      }
+    },
+    "nebulaTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+      },
+      "metadata": {
+        "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
+      }
+    }
+  },
+  "variables": {
+    "applicationGatewayName": "[concat(parameters('networkSettings').namespacePrefix, 'app-gateway')]",
+    "applicationGatewayIp": "[concat(parameters('networkSettings').namespacePrefix, 'app-gateway-ip')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('applicationGatewayIp')]",
+      "location": "[parameters('networkSettings').location]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "name": "[variables('applicationGatewayName')]",
+      "type": "Microsoft.Network/applicationGateways",
+      "location": "[parameters('networkSettings').location]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayIp'))]"
+      ],
+      "properties": {
+        "sku": {
+          "name": "[parameters('applicationGatewaySettings').skuName]",
+          "tier": "[parameters('applicationGatewaySettings').tier]",
+          "capacity": "[parameters('applicationGatewaySettings').instanceCount]"
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "ng-app-gateway-ip",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('networkSettings').name, parameters('networkSettings').applicationGatewaySubnet.name)]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "ng-app-gateway-fip",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayIp'))]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "ng-studio-fport",
+            "properties": {
+              "port": 7001
+            }
+          },
+          {
+            "name": "ng-explorer-fport",
+            "properties": {
+              "port": 7002
+            }
+          },
+          {
+            "name": "ng-dashboard-fport",
+            "properties": {
+              "port": 7005
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "ng-bp-studio",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "ipAddress": "[parameters('networkSettings').subnet.studioLoadBalancerIp]"
+                }
+              ]
+            }
+          },
+          {
+            "name": "ng-bp-explorer",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "ipAddress": "[parameters('networkSettings').subnet.explorerLoadBalancerIp]"
+                }
+              ]
+            }
+          },
+          {
+            "name": "ng-bp-dashboard",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "ipAddress": "[parameters('networkSettings').subnet.dashboardLoadBalancerIp]"
+                }
+              ]
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "ng-studio-httpsettings",
+            "properties": {
+              "port": 7001,
+              "protocol": "[parameters('applicationGatewaySettings').backendProtocol]",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": false,
+              "probeEnabled": false,
+              "requestTimeout": 20
+            }
+          },
+          {
+            "name": "ng-explorer-httpsettings",
+            "properties": {
+              "port": 7002,
+              "protocol": "[parameters('applicationGatewaySettings').backendProtocol]",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": false,
+              "probeEnabled": false,
+              "requestTimeout": 20
+            }
+          },
+          {
+            "name": "ng-dashboard-httpsettings",
+            "properties": {
+              "port": 7005,
+              "protocol": "[parameters('applicationGatewaySettings').backendProtocol]",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": false,
+              "probeEnabled": false,
+              "requestTimeout": 20
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "ng-studio-httplistener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('applicationGatewayName'), 'ng-app-gateway-fip')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('applicationGatewayName'), 'ng-studio-fport')]"
+              },
+              "protocol": "Http"
+            }
+          },
+          {
+            "name": "ng-explorer-httplistener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('applicationGatewayName'), 'ng-app-gateway-fip')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('applicationGatewayName'), 'ng-explorer-fport')]"
+              },
+              "protocol": "Http"
+            }
+          },
+          {
+            "name": "ng-dashboard-httplistener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('applicationGatewayName'), 'ng-app-gateway-fip')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('applicationGatewayName'), 'ng-dashboard-fport')]"
+              },
+              "protocol": "Http"
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "Name": "rule1",
+            "properties": {
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('applicationGatewayName'), 'ng-studio-httplistener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('applicationGatewayName'), 'ng-bp-studio')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('applicationGatewayName'), 'ng-studio-httpsettings')]"
+              }
+            }
+          },
+          {
+            "Name": "rule2",
+            "properties": {
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('applicationGatewayName'), 'ng-explorer-httplistener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('applicationGatewayName'), 'ng-bp-explorer')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('applicationGatewayName'), 'ng-explorer-httpsettings')]"
+              }
+            }
+          },
+          {
+            "Name": "rule3",
+            "properties": {
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('applicationGatewayName'), 'ng-dashboard-httplistener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('applicationGatewayName'), 'ng-bp-dashboard')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('applicationGatewayName'), 'ng-dashboard-httpsettings')]"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "fqdn": {
+      "value": "N/A",
+      "type": "string"
+    }
+  }
+}

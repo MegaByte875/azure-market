@@ -1,0 +1,810 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "adminUsername",
+        "type": "Microsoft.Compute.UserNameTextBox",
+        "label": "User name",
+        "defaultValue": "",
+        "toolTip": "Specify a user for accessing the virtual machines within your cluster. Must be a valid Ubuntu username",
+        "constraints": {
+          "required": true,
+          "regex": "^(?!(?:adm|admin|audio|backup|bin|cdrom|crontab|daemon|dialout|dip|disk|fax|floppy|fuse|games|gnats|irc|kmem|landscape|libuuid|list|lp|mail|man|messagebus|mlocate|netdev|news|nobody|nogroup|operator|plugdev|proxy|root|sasl|shadow|src|ssh|sshd|staff|sudo|sync|sys|syslog|tape|tty|users|utmp|uucp|video|voice|whoopsie|www\\-data)$)\\w+$",
+          "validationMessage": "Username must not be a reserved Ubuntu username"
+        },
+        "osPlatform": "Linux"
+      },
+      {
+        "name": "password",
+        "type": "Microsoft.Compute.CredentialsCombo",
+        "label": {
+          "authenticationType": "Authentication type",
+          "password": "Password",
+          "confirmPassword": "Confirm password",
+          "sshPublicKey": "SSH public key"
+        },
+        "toolTip": {
+          "authenticationType": "Choose Authentication type Password or PublicKey(SSH).",
+          "password": "Enter the password for the specified user name.",
+          "sshPublicKey": "Copy Public key into field."
+        },
+        "constraints": {
+          "required": true
+        },
+        "options": {
+          "hideConfirmation": false
+        },
+        "osPlatform": "Linux"
+      }
+    ],
+    "steps": [
+      {
+        "name": "clusterSettingsStep",
+        "label": "Cluster Settings",
+        "subLabel": {
+          "preValidation": "Required",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Cluster Settings",
+        "elements": [
+          {
+            "name": "ngVersion",
+            "type": "Microsoft.Common.DropDown",
+            "label": "NebulaGraph version",
+            "defaultValue": "v2.6.1",
+            "toolTip": "Choose a version of NebulaGraph.",
+            "constraints": {
+              "allowedValues": [
+                {
+                  "label": "v2.6.0",
+                  "value": "v2.6.0"
+                },
+                {
+                  "label": "v2.6.1",
+                  "value": "v2.6.1"
+                },
+                {
+                  "label": "v2.6.2",
+                  "value": "v2.6.2"
+                },
+                {
+                  "label": "v3.0.0",
+                  "value": "v3.0.0"
+                }
+              ]
+            }
+          },
+          {
+            "name": "ngClusterName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Cluster name",
+            "defaultValue": "",
+            "toolTip": "Name your NebulaGraph cluster.",
+            "constraints": {
+              "required": true,
+              "regex": "[^\\s]+$",
+              "validationMessage": "Cluster has trailing whitespace"
+            }
+          },
+          {
+            "name": "virtualNetworkConfiguration",
+            "type": "Microsoft.Common.Section",
+            "label": "Virtual network configuration",
+            "elements": [
+              {
+                "name": "virtualNetwork",
+                "type": "Microsoft.Network.VirtualNetworkCombo",
+                "label": {
+                  "virtualNetwork": "Virtual network",
+                  "subnets": "Subnets"
+                },
+                "toolTip": {
+                  "virtualNetwork": "Create a new Virtual Network or use an existing one",
+                  "subnets": "Choose the Subnet for NebulaGraph nodes. If choosing an existing Virtual Network, the Subnets to use will need to exist beforehand; Creating a new subnet in an existing Virtual Network is not supported"
+                },
+                "defaultValue": {
+                  "name": "ng-net",
+                  "addressPrefixSize": "/24"
+                },
+                "constraints": {
+                  "minAddressPrefixSize": "/24"
+                },
+                "options": {
+                  "hideExisting": false
+                },
+                "subnets": {
+                  "subnet1": {
+                    "label": "NebulaGraph nodes subnet",
+                    "defaultValue": {
+                      "name": "ng-subnet",
+                      "addressPrefixSize": "/25"
+                    },
+                    "constraints": {
+                      "minAddressPrefixSize": "/25",
+                      "minAddressCount": 3,
+                      "requireContiguousAddresses": true
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "nodesStep",
+        "label": "Nodes Configuration",
+        "subLabel": {
+          "preValidation": "Required",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Nodes Configuration",
+        "elements": [
+          {
+            "name": "graphNodes",
+            "type": "Microsoft.Common.Section",
+            "label": "Graph nodes",
+            "elements": [
+              {
+                "name": "vmGraphNodeCount",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Number of graph nodes",
+                "defaultValue": "1",
+                "toolTip": "Specify the number of graph nodes for this cluster. It is strongly recommended to have a minimum 2 graph nodes in order to ensure high availability.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "1",
+                      "value": 1
+                    },
+                    {
+                      "label": "2",
+                      "value": 2
+                    },
+                    {
+                      "label": "3",
+                      "value": 3
+                    },
+                    {
+                      "label": "4",
+                      "value": 4
+                    },
+                    {
+                      "label": "5",
+                      "value": 5
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vmSizeGraphNodes",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Graph node VM size",
+                "toolTip": "Choose VM SKU size for graph nodes",
+                "recommendedSizes": [
+                  "Standard_D2s_v5",
+                  "Standard_D4s_v5",
+                  "Standard_D8s_v5"
+                ],
+                "constraints": {
+                  "allowedSizes": [
+                    "Standard_D2as_v5",
+                    "Standard_D4as_v5",
+                    "Standard_D8as_v5",
+                    "Standard_D16as_v5",
+                    "Standard_D32as_v5",
+                    "Standard_D48as_v5",
+                    "Standard_D64as_v5",
+                    "Standard_D96as_v5",
+                    "Standard_E2s_v3",
+                    "Standard_E4s_v3",
+                    "Standard_E8s_v3",
+                    "Standard_E16s_v3",
+                    "Standard_E32s_v3",
+                    "Standard_E64s_v3",
+                    "Standard_E2as_v4",
+                    "Standard_E4as_v4",
+                    "Standard_E8as_v4",
+                    "Standard_E16as_v4",
+                    "Standard_E20as_v4",
+                    "Standard_E32as_v4",
+                    "Standard_E48as_v4",
+                    "Standard_E64as_v4",
+                    "Standard_E96as_v4",
+                    "Standard_M8ms",
+                    "Standard_M16ms",
+                    "Standard_M32ts",
+                    "Standard_M32ls",
+                    "Standard_M32ms",
+                    "Standard_M64s",
+                    "Standard_M64ls",
+                    "Standard_M64ms",
+                    "Standard_M128s",
+                    "Standard_M64",
+                    "Standard_M64m",
+                    "Standard_M128",
+                    "Standard_M128m"
+                  ]
+                },
+                "osPlatform": "Linux",
+                "count": "[steps('nodesStep').graphNodes.vmGraphNodeCount]"
+              }
+            ]
+          },
+          {
+            "name": "metaNodes",
+            "type": "Microsoft.Common.Section",
+            "label": "Meta nodes",
+            "elements": [
+              {
+                "name": "vmMetaNodeCount",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Number of meta nodes",
+                "defaultValue": "1",
+                "toolTip": "Specify the number of storage nodes for this cluster. It is strongly recommended to have a 3 meta nodes in order to ensure high availability.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "1",
+                      "value": 1
+                    },
+                    {
+                      "label": "3",
+                      "value": 3
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vmSizeMetaNodes",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Meta node VM size",
+                "toolTip": "Choose VM SKU size for meta nodes",
+                "recommendedSizes": [
+                  "Standard_D2s_v5",
+                  "Standard_D4s_v5",
+                  "Standard_D8s_v5"
+                ],
+                "constraints": {
+                  "allowedSizes": [
+                    "Standard_D2as_v5",
+                    "Standard_D4as_v5",
+                    "Standard_D8as_v5",
+                    "Standard_D16as_v5",
+                    "Standard_D32as_v5",
+                    "Standard_F2s_v2",
+                    "Standard_F4s_v2",
+                    "Standard_F8s_v2",
+                    "Standard_F16s_v2"
+                  ]
+                },
+                "osPlatform": "Linux",
+                "count": "[steps('nodesStep').metaNodes.vmMetaNodeCount]"
+              }
+            ]
+          },
+          {
+            "name": "storageNodes",
+            "type": "Microsoft.Common.Section",
+            "label": "Storage nodes",
+            "elements": [
+              {
+                "name": "vmStorageNodeCount",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Number of storage nodes",
+                "defaultValue": "1",
+                "toolTip": "Specify the number of storage nodes for this cluster. It is strongly recommended to have a minimum 3 storage nodes in order to ensure high availability.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "1",
+                      "value": 1
+                    },
+                    {
+                      "label": "2",
+                      "value": 2
+                    },
+                    {
+                      "label": "3",
+                      "value": 3
+                    },
+                    {
+                      "label": "4",
+                      "value": 4
+                    },
+                    {
+                      "label": "5",
+                      "value": 5
+                    },
+                    {
+                      "label": "6",
+                      "value": 6
+                    },
+                    {
+                      "label": "7",
+                      "value": 7
+                    },
+                    {
+                      "label": "8",
+                      "value": 8
+                    },
+                    {
+                      "label": "9",
+                      "value": 9
+                    },
+                    {
+                      "label": "10",
+                      "value": 10
+                    },
+                    {
+                      "label": "15",
+                      "value": 15
+                    },
+                    {
+                      "label": "20",
+                      "value": 20
+                    },
+                    {
+                      "label": "25",
+                      "value": 25
+                    },
+                    {
+                      "label": "30",
+                      "value": 30
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vmSizeStorageNodes",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Storage node VM size",
+                "toolTip": "Choose VM SKU size for storage nodes",
+                "recommendedSizes": [
+                  "Standard_D2s_v5",
+                  "Standard_D4s_v5",
+                  "Standard_D8s_v5"
+                ],
+                "constraints": {
+                  "allowedSizes": [
+                    "Standard_D2as_v5",
+                    "Standard_D4as_v5",
+                    "Standard_D8as_v5",
+                    "Standard_D16as_v5",
+                    "Standard_D32as_v5",
+                    "Standard_D48as_v5",
+                    "Standard_D64as_v5",
+                    "Standard_D96as_v5",
+                    "Standard_F2s_v2",
+                    "Standard_F4s_v2",
+                    "Standard_F8s_v2",
+                    "Standard_F16s_v2",
+                    "Standard_F32s_v2",
+                    "Standard_F64s_v2"
+                  ]
+                },
+                "osPlatform": "Linux",
+                "count": "[steps('nodesStep').storageNodes.vmStorageNodeCount]"
+              }
+            ]
+          },
+          {
+            "name": "storageNodesDisks",
+            "type": "Microsoft.Common.Section",
+            "label": "Storage node disks",
+            "elements": [
+              {
+                "name": "vmStorageDiskSize",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Size of each managed disk",
+                "defaultValue": "128GiB",
+                "toolTip": "The size of each data disk to attach to each storage node",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "16GiB",
+                      "value": "16GiB"
+                    },
+                    {
+                      "label": "32GiB",
+                      "value": "32GiB"
+                    },
+                    {
+                      "label": "64GiB",
+                      "value": "64GiB"
+                    },
+                    {
+                      "label": "128GiB",
+                      "value": "128GiB"
+                    },
+                    {
+                      "label": "256GiB",
+                      "value": "256GiB"
+                    },
+                    {
+                      "label": "512GiB",
+                      "value": "512GiB"
+                    },
+                    {
+                      "label": "1TiB",
+                      "value": "1TiB"
+                    },
+                    {
+                      "label": "2TiB",
+                      "value": "2TiB"
+                    },
+                    {
+                      "label": "4TiB",
+                      "value": "4TiB"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "storageAccountType",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Type of managed disks",
+                "defaultValue": "Premium disks",
+                "toolTip": "The storage type of managed disks. The default will be Premium disks for VMs that support Premium disks and Standard disks for those that do not.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Standard disks",
+                      "value": "Standard"
+                    },
+                    {
+                      "label": "Premium disks",
+                      "value": "Premium"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "externalAccessStep",
+        "label": "Studio & Explorer & Dashboard",
+        "subLabel": {
+          "preValidation": "Required",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Studio & Explorer & Dashboard",
+        "elements": [
+          {
+            "name": "studioSection",
+            "type": "Microsoft.Common.Section",
+            "label": "Studio",
+            "elements": [
+              {
+                "name": "studio",
+                "type": "Microsoft.Common.OptionsGroup",
+                "label": "Install Studio?",
+                "defaultValue": "Yes",
+                "toolTip": "Yes, to provision a single Studio instance.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Yes",
+                      "value": "Yes"
+                    },
+                    {
+                      "label": "No",
+                      "value": "No"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vmSizeStudio",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Studio VM size",
+                "toolTip": "Choose VM SKU, Standard D3, D4",
+                "visible": "[equals(steps('externalAccessStep').studioSection.studio, 'Yes')]",
+                "recommendedSizes": [
+                  "Standard_D2_v3",
+                  "Standard_D2as_v4"
+                ],
+                "constraints": {
+                  "allowedSizes": [
+                    "Standard_D2as_v4",
+                    "Standard_D4as_v4",
+                    "Standard_D8as_v4",
+                    "Standard_D16as_v4",
+                    "Standard_D32as_v4",
+                    "Standard_D2_v3",
+                    "Standard_D4_v3",
+                    "Standard_D8_v3",
+                    "Standard_D16_v3",
+                    "Standard_D32_v3",
+                    "Standard_D48_v3",
+                    "Standard_D64_v3",
+                    "Standard_D2s_v3",
+                    "Standard_D4s_v3",
+                    "Standard_D8s_v3",
+                    "Standard_D16s_v3",
+                    "Standard_D32s_v3",
+                    "Standard_D48s_v3",
+                    "Standard_D64s_v3"
+                  ]
+                },
+                "osPlatform": "Linux",
+                "count": "1"
+              }
+            ]
+          },
+          {
+            "name": "explorerSection",
+            "type": "Microsoft.Common.Section",
+            "label": "Explorer",
+            "elements": [
+              {
+                "name": "explorer",
+                "type": "Microsoft.Common.OptionsGroup",
+                "label": "Install Explorer?",
+                "defaultValue": "Yes",
+                "toolTip": "Yes, to provision a single Explorer instance.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Yes",
+                      "value": "Yes"
+                    },
+                    {
+                      "label": "No",
+                      "value": "No"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vmSizeExplorer",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Explorer VM size",
+                "toolTip": "Choose VM SKU, Standard D3, D4",
+                "visible": "[equals(steps('externalAccessStep').explorerSection.explorer, 'Yes')]",
+                "recommendedSizes": [
+                  "Standard_D2_v3",
+                  "Standard_D2as_v4"
+                ],
+                "constraints": {
+                  "allowedSizes": [
+                    "Standard_D2as_v4",
+                    "Standard_D4as_v4",
+                    "Standard_D8as_v4",
+                    "Standard_D16as_v4",
+                    "Standard_D32as_v4",
+                    "Standard_D2_v3",
+                    "Standard_D4_v3",
+                    "Standard_D8_v3",
+                    "Standard_D16_v3",
+                    "Standard_D32_v3",
+                    "Standard_D48_v3",
+                    "Standard_D64_v3",
+                    "Standard_D2s_v3",
+                    "Standard_D4s_v3",
+                    "Standard_D8s_v3",
+                    "Standard_D16s_v3",
+                    "Standard_D32s_v3",
+                    "Standard_D48s_v3",
+                    "Standard_D64s_v3"
+                  ]
+                },
+                "osPlatform": "Linux",
+                "count": "1"
+              }
+            ]
+          },
+          {
+            "name": "dashboardSection",
+            "type": "Microsoft.Common.Section",
+            "label": "Dashboard",
+            "elements": [
+              {
+                "name": "dashboard",
+                "type": "Microsoft.Common.OptionsGroup",
+                "label": "Install Dashboard?",
+                "defaultValue": "Yes",
+                "toolTip": "Yes, to provision a single Dashboard instance.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Yes",
+                      "value": "Yes"
+                    },
+                    {
+                      "label": "No",
+                      "value": "No"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vmSizeDashboard",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Dashboard VM size",
+                "toolTip": "Choose VM SKU, Standard D3, D4",
+                "visible": "[equals(steps('externalAccessStep').dashboardSection.dashboard, 'Yes')]",
+                "recommendedSizes": [
+                  "Standard_D2_v3",
+                  "Standard_D2as_v4"
+                ],
+                "constraints": {
+                  "allowedSizes": [
+                    "Standard_D2as_v4",
+                    "Standard_D4as_v4",
+                    "Standard_D8as_v4",
+                    "Standard_D16as_v4",
+                    "Standard_D32as_v4",
+                    "Standard_D2_v3",
+                    "Standard_D4_v3",
+                    "Standard_D8_v3",
+                    "Standard_D16_v3",
+                    "Standard_D32_v3",
+                    "Standard_D48_v3",
+                    "Standard_D64_v3",
+                    "Standard_D2s_v3",
+                    "Standard_D4s_v3",
+                    "Standard_D8s_v3",
+                    "Standard_D16s_v3",
+                    "Standard_D32s_v3",
+                    "Standard_D48s_v3",
+                    "Standard_D64s_v3"
+                  ]
+                },
+                "osPlatform": "Linux",
+                "count": "1"
+              }
+            ]
+          },
+          {
+            "name": "externalAccessSection",
+            "type": "Microsoft.Common.Section",
+            "label": "External Access",
+            "elements": [
+              {
+                "name": "appGatewayTier",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Application gateway tier",
+                "defaultValue": "Standard",
+                "toolTip": "Choose application gateway SKU, Standard or Standard V2.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Standard",
+                      "value": "Standard"
+                    },
+                    {
+                      "label": "Standard V2",
+                      "value": "Standard V2"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "securityStep",
+        "label": "Security",
+        "subLabel": {
+          "preValidation": "Required",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Security",
+        "elements": [
+          {
+            "name": "ng_admin",
+            "type": "Microsoft.Common.Section",
+            "label": "NebulaGraph user account",
+            "elements": [
+              {
+                "name": "securityAdminPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "'nebula' built-in user password",
+                  "confirmPassword": "Confirm password"
+                },
+                "toolTip": "Password for the built-in 'nebula' user. This is a built-in superuser account with unlimited access",
+                "constraints": {
+                  "required": true,
+                  "regex": "^.{12,}",
+                  "validationMessage": "Password must be at least 12 characters long"
+                },
+                "options": {
+                  "hideConfirmation": false
+                }
+              }
+            ]
+          },
+          {
+            "name": "ng_dashboard",
+            "type": "Microsoft.Common.Section",
+            "label": "Dashboard user account",
+            "elements": [
+              {
+                "name": "securityDashboardPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "'dashboard_admin' built-in user password",
+                  "confirmPassword": "Confirm password"
+                },
+                "toolTip": "Password for the built-in 'dashboard_admin' user. This is a built-in account that access Dashboard.",
+                "constraints": {
+                  "required": true,
+                  "regex": "^.{12,}",
+                  "validationMessage": "Password must be at least 12 characters long"
+                },
+                "options": {
+                  "hideConfirmation": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "tags",
+        "label": "Tags",
+        "elements": [
+          {
+            "name": "tagsByResource",
+            "type": "Microsoft.Common.TagsByResource",
+            "resources": [
+              "Microsoft.Compute/virtualMachines",
+              "Microsoft.Network/virtualNetworks",
+              "Microsoft.Network/loadBalancers",
+              "Microsoft.Compute/disks"
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "ngVersion": "[steps('clusterSettingsStep').ngVersion]",
+      "ngClusterName": "[steps('clusterSettingsStep').ngClusterName]",
+      "vNetNewOrExisting": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.newOrExisting]",
+      "vNetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.name]",
+      "vNetClusterSubnetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.name]",
+      "vNetAppGatewayIp": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.startAddress]",
+      "vNetExistingResourceGroup": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.resourceGroup]",
+      "vNetNewAddressPrefix": "[first(steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.addressPrefixes)]",
+      "vNetNewClusterSubnetAddressPrefix": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.addressPrefix]",
+      "vNetAppGatewaySubnetName": "ng-gateway-subnet",
+      "vNetNewAppGatewaySubnetAddressPrefix": "",
+      "studio": "[steps('externalAccessStep').studioSection.studio]",
+      "vmSizeStudio": "[steps('externalAccessStep').studioSection.vmSizeStudio]",
+      "explorer": "[steps('externalAccessStep').explorerSection.explorer]",
+      "vmSizeExplorer": "[steps('externalAccessStep').explorerSection.vmSizeExplorer]",
+      "dashboard": "[steps('externalAccessStep').dashboardSection.dashboard]",
+      "vmSizeDashboard": "[steps('externalAccessStep').dashboardSection.vmSizeDashboard]",
+      "vmSizeGraphNodes": "[steps('nodesStep').graphNodes.vmSizeGraphNodes]",
+      "vmGraphNodeCount": "[steps('nodesStep').graphNodes.vmGraphNodeCount]",
+      "vmGraphDiskCount": 1,
+      "vmGraphDiskSize": "10GiB",
+      "vmSizeMetaNodes": "[steps('nodesStep').metaNodes.vmSizeMetaNodes]",
+      "vmMetaNodeCount": "[steps('nodesStep').metaNodes.vmMetaNodeCount]",
+      "vmMetaDiskCount": 1,
+      "vmMetaDiskSize": "20GiB",
+      "vmSizeStorageNodes": "[steps('nodesStep').storageNodes.vmSizeStorageNodes]",
+      "vmStorageNodeCount": "[steps('nodesStep').storageNodes.vmStorageNodeCount]",
+      "vmStorageDiskCount": 1,
+      "vmStorageDiskSize": "[steps('nodesStep').storageNodesDisks.vmStorageDiskSize]",
+      "storageAccountType": "[steps('nodesStep').storageNodesDisks.storageAccountType]",
+      "adminUsername": "[basics('adminUsername')]",
+      "authenticationType": "[basics('password').authenticationType]",
+      "adminPassword": "[basics('password').password]",
+      "sshPublicKey": "[basics('password').sshPublicKey]",
+      "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
+      "securityDashboardPassword": "[steps('securityStep').dashboard_admin.securityDashboardPassword]",
+      "appGatewayTier": "Standard",
+      "appGatewayCount": 1,
+      "location": "[location()]"
+    }
+  }
+}

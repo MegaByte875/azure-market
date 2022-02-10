@@ -1,0 +1,335 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The base URI where artifacts required by this template are located including a trailing '/'"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+      },
+      "defaultValue": ""
+    },
+    "osSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Operating system settings"
+      }
+    },
+    "commonVmSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Shared VM settings"
+      }
+    },
+    "topologySettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Aggregate for topology variable"
+      }
+    },
+    "networkSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Network settings"
+      }
+    },
+    "nebulaTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+      },
+      "metadata": {
+        "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
+      }
+    }
+  },
+  "variables": {
+    "kibanaTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('kibanaTemplates')[parameters('topologySettings').kibana], parameters('_artifactsLocationSasToken')))]",
+    "dataTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('machines/data-nodes-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "locations": {
+      "eastus": {
+        "platformFaultDomainCount": 3
+      },
+      "eastus2": {
+        "platformFaultDomainCount": 3
+      },
+      "centralus": {
+        "platformFaultDomainCount": 3
+      },
+      "northcentralus": {
+        "platformFaultDomainCount": 3
+      },
+      "southcentralus": {
+        "platformFaultDomainCount": 3
+      },
+      "westus": {
+        "platformFaultDomainCount": 3
+      },
+      "canadacentral": {
+        "platformFaultDomainCount": 3
+      },
+      "northeurope": {
+        "platformFaultDomainCount": 3
+      },
+      "westeurope": {
+        "platformFaultDomainCount": 3
+      }
+    },
+    "normalizedLocation": "[replace(toLower(parameters('commonVmSettings').location), ' ', '')]",
+    "platformFaultDomainCount": "[if(contains(variables('locations'), variables('normalizedLocation')), variables('locations')[variables('normalizedLocation')].platformFaultDomainCount, 2)]",
+    "vmNsgName": "[concat(parameters('commonVmSettings').namespacePrefix, 'standard-lb-nsg')]",
+    "vmNsgProperties": [
+      {},
+      {
+        "securityRules": [
+          {
+            "name": "External",
+            "properties": {
+              "description": "Allows inbound traffic from Standard External LB",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "9201",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    ],
+    "standardInternalLoadBalancer": "[equals(parameters('networkSettings').internalSku, 'Standard')]",
+    "standardExternalLoadBalancer": "[equals(parameters('networkSettings').externalSku, 'Standard')]",
+    "standardInternalOrExternalLoadBalancer": "[or(variables('standardInternalLoadBalancer'), variables('standardExternalLoadBalancer'))]"
+  },
+  "resources": [
+    {
+      "condition": "[equals(parameters('topologySettings').dataNodesAreMasterEligible, 'No')]",
+      "name": "master-nodes",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('machines/master-nodes-resources.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "vm": {
+            "value": {
+              "shared": "[parameters('commonVmSettings')]",
+              "namespace": "[concat(parameters('commonVmSettings').namespacePrefix, 'master-')]",
+              "installScript": "[parameters('osSettings').extensionSettings.master]",
+              "size": "[parameters('topologySettings').vmSizeMasterNodes]",
+              "storageAccountType": "Standard_LRS",
+              "count": 3,
+              "backendPools": [],
+              "imageReference": "[parameters('osSettings').imageReference]",
+              "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
+              "acceleratedNetworking": "[if(equals(parameters('topologySettings').vmMasterNodeAcceleratedNetworking, 'Default'), if(contains(variables('vmAcceleratedNetworking'), parameters('topologySettings').vmSizeMasterNodes), 'Yes', 'No'), parameters('topologySettings').vmMasterNodeAcceleratedNetworking)]",
+              "nsg": "",
+              "standardInternalLoadBalancer": false
+            }
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[variables('standardInternalOrExternalLoadBalancer')]",
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('vmNsgName')]",
+      "location": "[parameters('commonVmSettings').location]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": "[variables('vmNsgProperties')[if(variables('standardExternalLoadBalancer'), 1, 0)]]"
+    },
+    {
+      "condition": "[greater(parameters('topologySettings').vmClientNodeCount, 0)]",
+      "name": "client-nodes",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [
+        "[variables('vmNsgName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('machines/client-nodes-resources.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "vm": {
+            "value": {
+              "shared": "[parameters('commonVmSettings')]",
+              "namespace": "[concat(parameters('commonVmSettings').namespacePrefix, 'client-')]",
+              "installScript": "[parameters('osSettings').extensionSettings.client]",
+              "size": "[parameters('topologySettings').vmSizeClientNodes]",
+              "count": "[parameters('topologySettings').vmClientNodeCount]",
+              "storageAccountType": "Standard_LRS",
+              "backendPools": "[parameters('topologySettings').loadBalancerBackEndPools]",
+              "imageReference": "[parameters('osSettings').imageReference]",
+              "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
+              "acceleratedNetworking": "[if(equals(parameters('topologySettings').vmClientNodeAcceleratedNetworking, 'Default'), if(contains(variables('vmAcceleratedNetworking'), parameters('topologySettings').vmSizeClientNodes), 'Yes', 'No'), parameters('topologySettings').vmClientNodeAcceleratedNetworking)]",
+              "nsg": "[if(variables('standardInternalOrExternalLoadBalancer'), variables('vmNsgName'), '')]",
+              "standardInternalLoadBalancer": "[variables('standardInternalLoadBalancer')]"
+            }
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "data-nodes",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [
+        "[variables('vmNsgName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('dataTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "vm": {
+            "value": {
+              "shared": "[parameters('commonVmSettings')]",
+              "namespace": "[concat(parameters('commonVmSettings').namespacePrefix, 'data-')]",
+              "installScript": "[parameters('osSettings').extensionSettings.data]",
+              "size": "[parameters('topologySettings').vmSizeDataNodes]",
+              "storageAccountType": "[parameters('topologySettings').vmDataNodeStorageAccountType]",
+              "count": "[parameters('topologySettings').vmDataNodeCount]",
+              "backendPools": "[parameters('topologySettings').dataLoadBalancerBackEndPools]",
+              "imageReference": "[parameters('osSettings').imageReference]",
+              "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
+              "acceleratedNetworking": "[if(equals(parameters('topologySettings').vmDataNodeAcceleratedNetworking, 'Default'), if(contains(variables('vmAcceleratedNetworking'), parameters('topologySettings').vmSizeDataNodes), 'Yes', 'No'), parameters('topologySettings').vmDataNodeAcceleratedNetworking)]",
+              "nsg": "[if(and(variables('standardInternalOrExternalLoadBalancer'), equals(parameters('topologySettings').vmClientNodeCount, 0)), variables('vmNsgName'), '')]",
+              "standardInternalLoadBalancer": "[variables('standardInternalLoadBalancer')]"
+            }
+          },
+          "storageSettings": {
+            "value": "[parameters('topologySettings').dataNodeStorageSettings]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('topologySettings').studio, 'Yes')]",
+      "name": "kibana",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('kibanaTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "credentials": {
+            "value": "[parameters('commonVmSettings').credentials]"
+          },
+          "location": {
+            "value": "[parameters('commonVmSettings').location]"
+          },
+          "namespace": {
+            "value": "[concat(parameters('commonVmSettings').namespacePrefix, 'studio')]"
+          },
+          "networkSettings": {
+            "value": "[parameters('networkSettings')]"
+          },
+          "osSettings": {
+            "value": "[parameters('osSettings')]"
+          },
+          "vmSize": {
+            "value": "[parameters('topologySettings').vmSizeStudio]"
+          },
+          "acceleratedNetworking": {
+            "value": "[if(equals(parameters('topologySettings').vmKibanaAcceleratedNetworking, 'Default'), if(contains(variables('vmAcceleratedNetworking'), parameters('topologySettings').vmSizeKibana), 'Yes', 'No'), parameters('topologySettings').vmKibanaAcceleratedNetworking)]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('topologySettings').dashboard, 'Yes')]",
+      "name": "dashboard",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('machines/dashboard-resources.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "vm": {
+            "value": {
+              "shared": "[parameters('commonVmSettings')]",
+              "namespace": "[concat(parameters('commonVmSettings').namespacePrefix, 'dashboard-')]",
+              "installScript": "[parameters('osSettings').extensionSettings.dashboard]",
+              "size": "[parameters('topologySettings').vmSizeDashboard]",
+              "storageAccountType": "Standard_LRS",
+              "count": 1,
+              "backendPools": [],
+              "imageReference": "[parameters('osSettings').imageReference]",
+              "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
+              "nsg": "",
+              "standardInternalLoadBalancer": false
+            }
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

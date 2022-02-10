@@ -1,0 +1,222 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+          "description": "The base URI where artifacts required by this template are located including a trailing '/'"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+      },
+      "defaultValue": ""
+    },
+    "ngSettings": {
+        "type": "object",
+        "metadata": {
+            "description" : "The NebulaGraph settings"
+        }
+    },
+    "commonVmSettings": {
+        "type": "object",
+        "metadata": {
+            "description" : "Shared VM settings"
+        }
+    },
+    "topologySettings": {
+        "type": "object",
+        "metadata": {
+            "description": "Aggregate for topology variable"
+        }
+    },
+    "networkSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Network settings"
+      }
+    },
+    "azureCloudStorageAccount": {
+      "type": "secureObject",
+      "metadata": {
+          "description": "The storage settings for the Azure Cloud plugin"
+      }
+    },
+    "sharedStorageAccount": {
+      "type": "secureObject",
+      "metadata": {
+        "description": "The shared storage settings"
+      }
+    },
+    "nebulaTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+      },
+      "metadata": {
+        "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
+      }
+    }
+  },
+  "variables": {
+    "quote": "'",
+    "doublequote": "\"",
+    "backslash": "\\",
+    "escapedQuote": "[concat(variables('quote'), variables('doublequote'), variables('quote'), variables('doublequote'), variables('quote'))]",
+    "nodesTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/node-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "namespacePrefix": "[parameters('topologySettings').vmHostNamePrefix]",
+    "dataNodeShortOpts": {
+      "No": "z",
+      "Yes": ""
+    },
+    "dataNodeShortOpt": "[variables('dataNodeShortOpts')[parameters('topologySettings').dataNodesAreMasterEligible]]",
+    "dedicatedMasterNodesShortOpts": {
+      "No": "d",
+      "Yes": ""
+    },
+    "dedicatedMasterNodesShortOpt": "[variables('dedicatedMasterNodesShortOpts')[parameters('topologySettings').dataNodesAreMasterEligible]]",
+    "installAzureCloudPluginShortOpts": {
+      "No": "",
+      "Yes": "j"
+    },
+    "installAzureCloudPluginShortOpt": "[variables('installAzureCloudPluginShortOpts')[parameters('azureCloudStorageAccount').install]]",
+    "azureCloudStorageName": "[if(equals(parameters('azureCloudStorageAccount').install, 'Yes'), if(empty(parameters('azureCloudStorageAccount').name), parameters('sharedStorageAccount').name, parameters('azureCloudStorageAccount').name), '')]",
+    "azureCloudStorageKey": "[if(equals(parameters('azureCloudStorageAccount').install, 'Yes'), if(empty(parameters('azureCloudStorageAccount').key), parameters('sharedStorageAccount').key, parameters('azureCloudStorageAccount').key), '')]",
+    "azureCloudStorageSuffix": "[if(equals(parameters('azureCloudStorageAccount').install, 'Yes'), if(empty(parameters('azureCloudStorageAccount').name), parameters('sharedStorageAccount').suffix, parameters('azureCloudStorageAccount').suffix), '')]",
+    "installPluginsShortOpts": {
+      "No": "",
+      "Yes": "l"
+    },
+    "installPluginsShortOpt": "[variables('installPluginsShortOpts')[parameters('ngSettings').installPlugins]]",
+    "commonShortOpts": "[concat(variables('dedicatedMasterNodesShortOpt'),  variables('installPluginsShortOpt'), variables('installAzureCloudPluginShortOpt'), 'n ')]",
+    "commonInstallParams": "",
+    "ubuntuScripts": [
+      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-install.sh', parameters('_artifactsLocationSasToken')))]"
+    ],
+    "ubuntuSettings": {
+      "imageReference": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "16.04.0-LTS",
+        "version": "latest"
+      },
+      "managementPort": 22,
+      "extensionSettings": {
+        "graph": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "fileUris": "[variables('ubuntuScripts')]"
+          },
+          "protectedSettings": {
+            "commandToExecute": ""
+          }
+        },
+        "meta": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "fileUris": "[variables('ubuntuScripts')]"
+          },
+          "protectedSettings": {
+            "commandToExecute": ""
+          }
+        },
+        "storage": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "fileUris": "[variables('ubuntuScripts')]"
+          },
+          "protectedSettings": {
+            "commandToExecute": ""
+          }
+        },
+        "studio": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "fileUris": "[variables('ubuntuScripts')]"
+          },
+          "protectedSettings": {
+            "commandToExecute": ""
+          }
+        },
+        "explorer": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "fileUris": "[variables('ubuntuScripts')]"
+          },
+          "protectedSettings": {
+            "commandToExecute": ""
+          }
+        },
+        "dashboard": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "fileUris": "[variables('ubuntuScripts')]"
+          },
+          "protectedSettings": {
+            "commandToExecute": ""
+          }
+        }
+      }
+    }
+  },
+  "resources": [
+    {
+      "name": "nebula-nodes",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [ ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('nodesTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "osSettings": {
+            "value": "[variables('ubuntuSettings')]"
+          },
+          "commonVmSettings": {
+            "value": "[parameters('commonVmSettings')]"
+          },
+          "topologySettings": {
+            "value": "[parameters('topologySettings')]"
+          },
+          "networkSettings": {
+            "value": "[parameters('networkSettings')]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
