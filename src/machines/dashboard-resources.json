@@ -61,6 +61,7 @@
     },
     "adminUsername": {
       "type": "string",
+      "defaultValue": "azureadmin",
       "metadata": {
         "description": "VM Admin Username"
       }
@@ -234,7 +235,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat(parameters('customScriptCommandToExecute'), reference(resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), '0'))).ipConfigurations[0].properties.privateIPAddress)]"
+          "commandToExecute": "[concat(parameters('customScriptCommandToExecute'), reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     }
