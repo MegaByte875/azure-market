@@ -44,6 +44,13 @@
         "description": "The name of the NebulaGraph cluster"
       }
     },
+    "ngLicenseBlob": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The NebulaGraph ent license address"
+      }
+    },
     "studio": {
       "type": "string",
       "defaultValue": "Yes",
@@ -475,6 +482,7 @@
     "location": "[parameters('location')]",
     "ngSettings": {
       "clusterName": "[parameters('ngClusterName')]",
+      "licenseBlob": "[parameters('ngLicenseBlob')]",
       "version": "[parameters('ngVersion')]",
       "securityAdminPwd": "[parameters('securityAdminPassword')]",
       "securityDashboardPwd": "[parameters('securityDashboardPassword')]"

@@ -749,6 +749,32 @@
         ]
       },
       {
+        "name": "licensesStep",
+        "label": "License",
+        "subLabel": {
+          "preValidation": "Required",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "License",
+        "elements": [{
+          "name": "ngLicenseBlob",
+          "type": "Microsoft.Common.FileUpload",
+          "label": "Nebula Graph License",
+          "toolTip": "The nebula graph ent license for all nebula products",
+          "constraints": {
+            "required": true,
+            "accept": ".license"
+          },
+          "options": {
+            "multiple": false,
+            "openMode": "binary",
+            "uploadMode": "file",
+            "encoding": "UTF-8"
+          }
+        }
+        ]
+      },
+      {
         "name": "tags",
         "label": "Tags",
         "elements": [
@@ -768,6 +794,7 @@
     "outputs": {
       "ngVersion": "[steps('clusterSettingsStep').ngVersion]",
       "ngClusterName": "[steps('clusterSettingsStep').ngClusterName]",
+      "ngLicenseBlob": "[steps('licensesStep').ngLicenseBlob]",
       "vNetNewOrExisting": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.newOrExisting]",
       "vNetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.name]",
       "vNetClusterSubnetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.name]",
