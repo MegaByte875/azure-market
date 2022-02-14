@@ -213,6 +213,9 @@
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
+          },
+          "ngSettings": {
+            "value": "[parameters('ngSettings']"
           }
         }
       }
