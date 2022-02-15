@@ -34,20 +34,9 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_A1",
+      "defaultValue": "Standard_B2s",
       "metadata": {
         "description": "Size of the Studio VM"
-      }
-    },
-    "acceleratedNetworking": {
-      "type": "string",
-      "defaultValue": "No",
-      "allowedValues": [
-        "Yes",
-        "No"
-      ],
-      "metadata": {
-        "description": "Whether to enable accelerated networking for Studio, which enables single root I/O virtualization (SR-IOV) to a VM, greatly improving its networking performance. Valid only for specific VM SKUs"
       }
     },
     "nebulaTags": {
@@ -83,14 +72,14 @@
               "keyData": "[parameters('credentials').sshPublicKey]"
             }
           ]
-      }
+        }
       }
     },
     "osProfile": "[variables(concat(parameters('credentials').authenticationType, '_osProfile'))]"
   },
   "resources": [
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('securityGroupName')]",
       "location": "[parameters('location')]",
@@ -131,7 +120,7 @@
       }
     },
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[parameters('location')]",
@@ -143,7 +132,6 @@
       ],
       "properties": {
         "primary": true,
-        "enableAcceleratedNetworking": "[equals(parameters('acceleratedNetworking'), 'Yes')]",
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -164,7 +152,7 @@
       }
     },
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2020-12-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('namespace')]",
       "location": "[parameters('location')]",
@@ -197,20 +185,17 @@
             }
           ]
         }
-      },
-      "resources": [
-        {
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('namespace'), '/script')]",
-          "apiVersion": "2019-03-01",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', parameters('namespace'))]"
-          ],
-          "properties": "[parameters('osSettings').extensionSettings.studio]"
-        }
-      ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('namespace'), '/script')]",
+      "apiVersion": "2020-12-01",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('namespace'))]"
+      ],
+      "properties": "[parameters('osSettings').extensionSettings.studio]"
     }
-  ],
-  "outputs": {}
+  ]
 }

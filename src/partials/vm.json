@@ -2,6 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/MegaByte875/azure-market/main/src/",
+      "metadata": {
+        "description": "Base uri of resources"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+      },
+      "defaultValue": ""
+    },
     "vm": {
       "type": "object",
       "metadata": {
@@ -18,15 +32,6 @@
       "type": "string",
       "metadata": {
         "description": "The name of the availability set"
-      }
-    },
-    "dataDisks": {
-      "type": "object",
-      "defaultValue": {
-        "disks": []
-      },
-      "metadata": {
-        "description": "additional data disks to attach"
       }
     },
     "nebulaTags": {
@@ -63,58 +68,11 @@
       }
     },
     "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]",
-    "publicIpName": "[concat(variables('namespace'), parameters('index'), '-ip')]",
-    "nsgIpConfigs": [
-      {},
-      {
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vm').nsg)]"
-        }
-      },
-      {
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vm').nsg)]"
-        },
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "primary": true,
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[parameters('vm').shared.subnetId]"
-              },
-              "loadBalancerBackendAddressPools": "[parameters('vm').backendPools]",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
-              }
-            }
-          }
-        ]
-      }
-    ],
-    "nsgIpConfig": "[variables('nsgIpConfigs')[if(empty(parameters('vm').nsg), 0, if(parameters('vm').standardInternalLoadBalancer, 2, 1))]]",
-    "nicProperties": {
-      "primary": true,
-      "enableAcceleratedNetworking": "[equals(parameters('vm').acceleratedNetworking, 'Yes')]",
-      "ipConfigurations": [
-        {
-          "name": "ipconfig1",
-          "properties": {
-            "privateIPAllocationMethod": "Dynamic",
-            "subnet": {
-              "id": "[parameters('vm').shared.subnetId]"
-            },
-            "loadBalancerBackendAddressPools": "[parameters('vm').backendPools]"
-          }
-        }
-      ]
-    }
+    "publicIpName": "[concat(variables('namespace'), parameters('index'), '-ip')]"
   },
   "resources": [
     {
-      "condition": "[and(not(empty(parameters('vm').nsg)), parameters('vm').standardInternalLoadBalancer)]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIpName')]",
       "location": "[parameters('vm').shared.location]",
@@ -125,14 +83,11 @@
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "properties": {
-        "publicIPAllocationMethod": "Static",
-        "dnsSettings": {
-          "domainNameLabel": "[concat(variables('namespace'), parameters('index'), uniqueString(resourceGroup().id, deployment().name))]"
-        }
+        "publicIPAllocationMethod": "Dynamic"
       }
     },
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('namespace'), parameters('index'), '-nic')]",
       "location": "[parameters('vm').shared.location]",
@@ -142,10 +97,29 @@
       "dependsOn": [
         "[variables('publicIpName')]"
       ],
-      "properties": "[union(variables('nicProperties'), variables('nsgIpConfig'))]"
+      "properties": {
+        "primary": true,
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpName'))]"
+              },
+              "subnet": {
+                "id": "[parameters('vm').shared.subnetId]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vm').nsg)]"
+        }
+      }
     },
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2020-12-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('namespace'), parameters('index'))]",
       "location": "[parameters('vm').shared.location]",
@@ -172,8 +146,7 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          },
-          "dataDisks": "[parameters('dataDisks').disks]"
+          }
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -182,19 +155,30 @@
             }
           ]
         }
-      },
-      "resources": [
-        {
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('namespace'), parameters('index'), '/script')]",
-          "apiVersion": "2019-03-01",
-          "location": "[parameters('vm').shared.location]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('namespace'), parameters('index')))]"
-          ],
-          "properties": "[parameters('vm').installScript]"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('namespace'), parameters('index'), '/script')]",
+      "apiVersion": "2020-12-01",
+      "location": "[parameters('vm').shared.location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('namespace'), parameters('index')))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
+          ]
+        }, 
+        "protectedSettings": {
+          "commandToExecute": "sh privateip.sh hello world"
         }
-      ]
+      }
     }
   ],
   "outputs": {}

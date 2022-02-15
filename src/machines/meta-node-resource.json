@@ -4,6 +4,7 @@
   "parameters": {
     "_artifactsLocation": {
       "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/MegaByte875/azure-market/main/src/",
       "metadata": {
         "description": "Base uri of resources"
       }
@@ -19,15 +20,33 @@
       "type": "object",
       "metadata": {
         "description": "vm configuration"
+      },
+      "defaultValue": {
+        "shared": {
+          "location": "[resourceGroup().location]",
+          "subnet": {
+            "name": "ng-subnet",
+            "addressPrefix": "10.5.0.0/24"
+          },
+          "subnetId": "/subscriptions/4b6023df-58a4-468d-a670-197dffa3a1f7/resourceGroups/ARM_TEST/providers/Microsoft.Network/virtualNetworks/ngVNet/subnets/ng-subnet",
+          "credentials": {
+            "adminUsername": "azureadmin",
+            "authenticationType": "sshPublicKey"
+          }
+        },
+        "namespace": "meta",
+        "storageAccountType": "Standard_LRS",
+        "count": 2,
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "18.04-LTS",
+          "version": "latest"
+        },
+        "platformFaultDomainCount": 3
       }
     },
-    "metaSettings": {
-      "type": "object",
-      "metadata": {
-        "description": "Storage Account Settings"
-      }
-    },
-    "elasticTags": {
+    "nebulaTags": {
       "type": "object",
       "defaultValue": {
         "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
@@ -38,25 +57,23 @@
     }
   },
   "variables": {
-    "namespace": "[parameters('vm').namespace]",
-    "avSetCount": "[add(div(sub(parameters('vm').count, 1), 100), 1)]",
-    "diskCount": "[if(greater(parameters('metaSettings').dataDisks, 0), parameters('metaSettings').dataDisks, 1)]"
+    "namespace": "[parameters('vm').namespace]"
   },
   "resources": [
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2020-12-01",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[concat(variables('namespace'), copyindex(), '-av-set')]",
+      "name": "[concat(variables('namespace'), 'av-set')]",
       "location": "[parameters('vm').shared.location]",
       "tags": {
-        "provider": "[toUpper(parameters('elasticTags').provider)]"
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "copy": {
         "name": "[concat(variables('namespace'),'av-loop')]",
-        "count": "[variables('avSetCount')]"
+        "count": "[parameters('vm').count]"
       },
       "properties": {
-        "platformUpdateDomainCount": 20,
+        "platformUpdateDomainCount": 2,
         "platformFaultDomainCount": "[parameters('vm').platformFaultDomainCount]"
       },
       "sku": {
@@ -64,12 +81,11 @@
       }
     },
     {
-      "condition": "[greater(parameters('metaSettings').dataDisks, 0)]",
-      "name": "[concat(variables('namespace'), copyindex(), '-vm-creation')]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-10-01",
+      "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), mod(copyindex(),variables('avSetCount')), '-av-set'))]"
+        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), 'av-set'))]"
       ],
       "copy": {
         "name": "[concat(variables('namespace'),'vm-creation-loop')]",
@@ -86,70 +102,25 @@
             "value": "[parameters('vm')]"
           },
           "index": {
-            "value": "[copyindex()]"
+            "value": "[copyIndex()]"
           },
           "availabilitySet": {
-            "value": "[concat(variables('namespace'), mod(copyindex(),variables('avSetCount')), '-av-set')]"
+            "value": "[concat(variables('namespace'), 'av-set')]"
           },
-          "dataDisks": {
-            "value": {
-              "copy": [
-                {
-                  "name": "disks",
-                  "count": "[variables('diskCount')]",
-                  "input": {
-                    "name": "[concat(variables('namespace'), copyindex(), '-datadisk', copyIndex('disks', 1))]",
-                    "diskSizeGB": "[parameters('metaSettings').diskSize]",
-                    "lun": "[copyIndex('disks')]",
-                    "managedDisk": {
-                      "storageAccountType": "[parameters('metaSettings').accountType]"
-                    },
-                    "caching": "None",
-                    "createOption": "Empty"
-                  }
-                }
-              ]
-            }
-          },
-          "elasticTags": {
-            "value": "[parameters('elasticTags')]"
-          }
-        }
-      }
-    },
-    {
-      "condition": "[equals(parameters('metaSettings').dataDisks, 0)]",
-      "name": "[concat(variables('namespace'), copyindex(), '-vm-nodisks-creation')]",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
-      "dependsOn": [
-        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), mod(copyindex(),variables('avSetCount')), '-av-set'))]"
-      ],
-      "copy": {
-        "name": "[concat(variables('namespace'),'vm-creation-loop')]",
-        "count": "[parameters('vm').count]"
-      },
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('partials/vm.json', parameters('_artifactsLocationSasToken')))]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "vm": {
-            "value": "[parameters('vm')]"
-          },
-          "index": {
-            "value": "[copyindex()]"
-          },
-          "availabilitySet": {
-            "value": "[concat(variables('namespace'), mod(copyindex(),variables('avSetCount')), '-av-set')]"
-          },
-          "elasticTags": {
-            "value": "[parameters('elasticTags')]"
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
           }
         }
       }
     }
-  ]
+  ],
+  "outputs": {
+    "metaNodePrivateAddresses": {
+      "type": "array",
+      "copy": {
+        "count": "[parameters('vm').count]",
+        "input": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vm').namespace, copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
+      }
+    }
+  }
 }

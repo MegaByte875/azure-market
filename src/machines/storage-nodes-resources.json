@@ -11,7 +11,7 @@
     "_artifactsLocationSasToken": {
       "type": "securestring",
       "metadata": {
-          "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
       },
       "defaultValue": ""
     },
@@ -21,7 +21,7 @@
         "description": "vm configuration"
       }
     },
-    "elasticTags": {
+    "nebulaTags": {
       "type": "object",
       "defaultValue": {
         "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
@@ -36,12 +36,16 @@
   },
   "resources": [
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2020-12-01",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[concat(variables('namespace'), 'av-set')]",
       "location": "[parameters('vm').shared.location]",
       "tags": {
-        "provider": "[toUpper(parameters('elasticTags').provider)]"
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "copy": {
+        "name": "[concat(variables('namespace'),'av-loop')]",
+        "count": "[parameters('vm').count]"
       },
       "properties": {
         "platformUpdateDomainCount": 3,
@@ -52,9 +56,9 @@
       }
     },
     {
-      "name": "[concat(variables('namespace'), copyindex(), '-vm-creation')]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2020-12-01",
+      "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), 'av-set'))]"
       ],
@@ -72,14 +76,14 @@
           "vm": {
             "value": "[parameters('vm')]"
           },
+          "index": {
+            "value": "[copyIndex()]"
+          },
           "availabilitySet": {
             "value": "[concat(variables('namespace'), 'av-set')]"
           },
-          "index": {
-            "value": "[copyindex()]"
-          },
-          "elasticTags": {
-            "value": "[parameters('elasticTags')]"
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
           }
         }
       }
