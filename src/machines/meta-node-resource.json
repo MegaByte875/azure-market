@@ -34,7 +34,7 @@
             "adminUsername": "azureadmin",
             "password": "",
             "authenticationType": "sshPublicKey",
-            "sshPublicKey": ""
+            "sshPublicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl"
           }
         },
         "namespace": "meta",
