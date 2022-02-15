@@ -32,7 +32,9 @@
           "subnetId": "/subscriptions/4b6023df-58a4-468d-a670-197dffa3a1f7/resourceGroups/ARM_TEST/providers/Microsoft.Network/virtualNetworks/ngVNet/subnets/ng-subnet",
           "credentials": {
             "adminUsername": "azureadmin",
-            "authenticationType": "sshPublicKey"
+            "password": "",
+            "authenticationType": "sshPublicKey",
+            "sshPublicKey": ""
           }
         },
         "namespace": "meta",
