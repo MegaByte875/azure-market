@@ -68,6 +68,7 @@
       }
     },
     "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]",
+    "nicName": "[concat(variables('namespace'), parameters('index'), '-nic')]",
     "publicIpName": "[concat(variables('namespace'), parameters('index'), '-ip')]"
   },
   "resources": [
@@ -89,7 +90,7 @@
     {
       "apiVersion": "2020-11-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('namespace'), parameters('index'), '-nic')]",
+      "name": "[variables('nicName')]",
       "location": "[parameters('vm').shared.location]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -112,10 +113,7 @@
               }
             }
           }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vm').nsg)]"
-        }
+        ]
       }
     },
     {
@@ -127,7 +125,7 @@
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('namespace'), parameters('index'), '-nic'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
       ],
       "properties": {
         "availabilitySet": {
@@ -151,7 +149,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('namespace'), parameters('index'), '-nic'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
             }
           ]
         }
@@ -174,7 +172,7 @@
           "fileUris": [
             "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
           ]
-        }, 
+        },
         "protectedSettings": {
           "commandToExecute": "sh privateip.sh hello world"
         }
