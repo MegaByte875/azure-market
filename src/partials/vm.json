@@ -132,7 +132,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySet'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[parameters('vm').size]"
+          "vmSize": "[parameters('vm').shared.size]"
         },
         "osProfile": "[variables('osProfile')]",
         "storageProfile": {
