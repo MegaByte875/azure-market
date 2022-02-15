@@ -116,7 +116,10 @@
       "type": "array",
       "copy": {
         "count": "[parameters('vm').count]",
-        "input": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vm').namespace, copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
+        "input": {
+          "id": "[reference(concat(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vm').namespace, copyIndex(), '-nic'))), '2020-11-01', 'Full').resourceId]",
+          "address": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vm').namespace, copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
+        }
       }
     }
   }
