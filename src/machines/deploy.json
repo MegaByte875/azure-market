@@ -168,7 +168,7 @@
             "value": "[concat(variables('namespace'), '-av-set')]"
           },
           "metaAddress": {
-            "value": "[string(reference('nic').outputs.privateAddresses.value)]"
+            "value": "[replace(replace(string(reference('nic').outputs.privateAddresses.value), '[', ''), ']', '')]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
