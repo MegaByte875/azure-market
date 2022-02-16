@@ -133,7 +133,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('sh privateip.sh', parameters('metaAddress'))]"
+              "commandToExecute": "[concat('sh privateip.sh ', parameters('metaAddress'))]"
             }
           }
         }
