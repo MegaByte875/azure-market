@@ -70,9 +70,7 @@
       "type": "array",
       "copy": {
         "count": "[parameters('count')]",
-        "input": {
-          "address": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), '-', copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
-        }
+        "input": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), '-', copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
       }
     }
   }
