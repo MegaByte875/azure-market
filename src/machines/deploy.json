@@ -48,7 +48,8 @@
     }
   },
   "variables": {
-    "namespace": "[parameters('vm').namespace]"
+    "namespace": "[parameters('vm').namespace]",
+    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interfaces.json', parameters('_artifactsLocationSasToken')))]"
   },
   "resources": [
     {
@@ -68,42 +69,36 @@
       }
     },
     {
-      "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('namespace'), '-', copyIndex(), '-nic')]",
-      "location": "[parameters('vm').shared.location]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
+      "name": "shared",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
       "properties": {
-        "primary": true,
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[parameters('vm').shared.subnetId]"
-              }
-            }
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('interfaceTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[parameters('vm').shared.location]"
+          },
+          "count": {
+            "value": "[parameters('vm').count]"
+          },
+          "namespace": {
+            "value": "[variables('namespace')]"
+          },
+          "subnetId": {
+            "value": "[parameters('vm').shared.subnetId]"
           }
-        ]
-      },
-      "copy": {
-        "name": "nicCopy",
-        "count": "[parameters('vm').count]"
+        }
       }
     }
   ],
   "outputs": {
-    "metaNodePrivateAddresses": {
+    "addresses": {
       "type": "array",
-      "copy": {
-        "count": "[parameters('vm').count]",
-        "input": {
-          "address": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vm').namespace, '-', copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
-        }
-      }
+      "value": "[reference('shared').outputs.metaNodePrivateAddresses.value]"
     }
   }
 }

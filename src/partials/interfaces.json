@@ -1,0 +1,79 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location where resources will be provisioned"
+      }
+    },
+    "count": {
+      "type": "int",
+      "metadata": {
+        "description": "the outer loop index"
+      }
+    },
+    "namespace": {
+      "type": "string",
+      "metadata": {
+        "description": "The unique namespace for the Dashboard VM"
+      }
+    },
+    "subnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of subnet"
+      }
+    },
+    "nebulaTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+      },
+      "metadata": {
+        "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
+      }
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('namespace'), '-', copyIndex(), '-nic')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "primary": true,
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[parameters('subnetId')]"
+              }
+            }
+          }
+        ]
+      },
+      "copy": {
+        "name": "nicCopy",
+        "count": "[parameters('count')]"
+      }
+    }
+  ],
+  "outputs": {
+    "metaNodePrivateAddresses": {
+      "type": "array",
+      "copy": {
+        "count": "[parameters('count')]",
+        "input": {
+          "address": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), '-', copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
+        }
+      }
+    }
+  }
+}
