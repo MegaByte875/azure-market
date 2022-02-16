@@ -8,22 +8,16 @@
         "description": "Location where resources will be provisioned"
       }
     },
-    "count": {
-      "type": "int",
-      "metadata": {
-        "description": "the outer loop index"
-      }
-    },
-    "namespace": {
+    "nebulaNSG": {
       "type": "string",
       "metadata": {
-        "description": "The unique namespace for the Dashboard VM"
+        "description": "The name of nebula nodes network security group"
       }
     },
-    "subnetId": {
+    "managementPort": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of subnet"
+        "description": "The management port for SSH"
       }
     },
     "nebulaTags": {
@@ -39,39 +33,30 @@
   "resources": [
     {
       "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('namespace'), '-', copyIndex(), '-nic')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('nebulaNSG')]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "properties": {
-        "primary": true,
-        "ipConfigurations": [
+        "securityRules": [
           {
-            "name": "ipconfig1",
+            "name": "SSH",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[parameters('subnetId')]"
-              }
+              "description": "Allows inbound SSH traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "[parameters('managementPort')]",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
             }
           }
         ]
-      },
-      "copy": {
-        "name": "nicCopy",
-        "count": "[parameters('count')]"
       }
     }
-  ],
-  "outputs": {
-    "metaNodePrivateAddresses": {
-      "type": "array",
-      "copy": {
-        "count": "[parameters('count')]",
-        "input": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), '-', copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
-      }
-    }
-  }
+  ]
 }

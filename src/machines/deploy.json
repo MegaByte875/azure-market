@@ -49,29 +49,43 @@
   },
   "variables": {
     "namespace": "[parameters('vm').namespace]",
-    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interfaces.json', parameters('_artifactsLocationSasToken')))]"
+    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
+    "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]"
   },
   "resources": [
     {
-      "apiVersion": "2020-12-01",
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "[concat(variables('namespace'), '-av-set')]",
-      "location": "[parameters('vm').shared.location]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
+      "name": "nsg",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
       "properties": {
-        "platformUpdateDomainCount": 2,
-        "platformFaultDomainCount": "[parameters('vm').platformFaultDomainCount]"
-      },
-      "sku": {
-        "name": "Aligned"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('securityGroupTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[parameters('vm').shared.location]"
+          },
+          "securityGroupName": {
+            "value": "nebula-os-nsg"
+          },
+          "managementPort": {
+            "value": "22"
+          },
+          "subnetId": {
+            "value": "[parameters('vm').shared.subnetId]"
+          }
+        }
       }
     },
     {
-      "name": "shared",
+      "name": "nic",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'nsg')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -98,7 +112,7 @@
   "outputs": {
     "addresses": {
       "type": "array",
-      "value": "[reference('shared').outputs.metaNodePrivateAddresses.value]"
+      "value": "[string(reference('nic').outputs.privateAddresses.value)]"
     }
   }
 }

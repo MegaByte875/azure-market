@@ -1,0 +1,111 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location where resources will be provisioned"
+      }
+    },
+    "count": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of NICs"
+      }
+    },
+    "namespace": {
+      "type": "string",
+      "metadata": {
+        "description": "The prefix to use for NICs"
+      }
+    },
+    "nebulaNSG": {
+      "type": "string",
+      "metadata": {
+        "description": "The network security group name of nebula nodes"
+      }
+    },
+    "subnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of subnet"
+      }
+    },
+    "nebulaTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+      },
+      "metadata": {
+        "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
+      }
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(parameters('namespace'), copyIndex(), '-ip')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      },
+      "copy": {
+        "name": "publicIpCopy",
+        "count": "[parameters('count')]"
+      }
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('namespace'), copyIndex(), '-nic')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "dependsOn": [
+        "[concat(parameters('namespace'), copyIndex(), '-ip')]"
+      ],
+      "properties": {
+        "primary": true,
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('namespace'), copyIndex(), '-ip'))]"
+              },
+              "subnet": {
+                "id": "[parameters('subnetId')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nebulaNSG'))]"
+        }
+      },
+      "copy": {
+        "name": "nicCopy",
+        "count": "[parameters('count')]"
+      }
+    }
+  ],
+  "outputs": {
+    "privateAddresses": {
+      "type": "array",
+      "copy": {
+        "count": "[parameters('count')]",
+        "input": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
+      }
+    }
+  }
+}
