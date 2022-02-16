@@ -29,7 +29,7 @@
             "name": "ng-subnet",
             "addressPrefix": "10.5.0.0/24"
           },
-          "subnetId": "/subscriptions/4b6023df-58a4-468d-a670-197dffa3a1f7/resourceGroups/ARM_TEST/providers/Microsoft.Network/virtualNetworks/ngVNet/subnets/ng-subnet",
+          "subnetId": "[resourceGroup().id, 'Microsoft.Network/virtualNetworks/subnets', 'ngVNet', 'ng-subnet']",
           "credentials": {
             "adminUsername": "azureadmin",
             "password": "Kfjgkdl*200f9",
@@ -38,7 +38,7 @@
           }
         },
         "namespace": "meta",
-        "resourceGroup": "[resourceGroup().name]",
+        "resourceGroup": "[resourceGroup().id]",
         "storageAccountType": "Standard_LRS",
         "count": 2,
         "imageReference": {
