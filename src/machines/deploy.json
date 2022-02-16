@@ -72,9 +72,6 @@
           },
           "managementPort": {
             "value": "22"
-          },
-          "subnetId": {
-            "value": "[parameters('vm').shared.subnetId]"
           }
         }
       }
