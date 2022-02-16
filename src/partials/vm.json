@@ -69,7 +69,7 @@
     },
     "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]",
     "nicName": "[concat(variables('namespace'), parameters('index'), '-nic')]",
-    "nicId": "[resourceId('ARM_TEST', 'Microsoft.Network/networkInterfaces', variables('nicName'))]"
+    "nicId": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
   },
   "resources": [
     {
@@ -81,7 +81,7 @@
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "dependsOn": [
-        "[variables('nicId')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
       ],
       "properties": {
         "availabilitySet": {
