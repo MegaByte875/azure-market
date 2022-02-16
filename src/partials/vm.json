@@ -80,9 +80,6 @@
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
-      "dependsOn": [
-        "[variables('nicId')]"
-      ],
       "properties": {
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySet'))]"
@@ -109,30 +106,32 @@
             }
           ]
         }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('namespace'), parameters('index'), '/script')]",
-      "apiVersion": "2020-12-01",
-      "location": "[parameters('vm').shared.location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('namespace'), parameters('index')))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Azure.Extensions",
-        "type": "CustomScript",
-        "typeHandlerVersion": "2.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "fileUris": [
-            "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
-          ]
-        },
-        "protectedSettings": {
-          "commandToExecute": "sh privateip.sh \"[\"10.5.0.5\",\"10.5.0.6\"]\""
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('namespace'), parameters('index'), '/script')]",
+          "apiVersion": "2020-12-01",
+          "location": "[parameters('vm').shared.location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('namespace'), parameters('index')))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Azure.Extensions",
+            "type": "CustomScript",
+            "typeHandlerVersion": "2.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
+              ]
+            },
+            "protectedSettings": {
+              "commandToExecute": "sh privateip.sh \"[\"10.5.0.5\",\"10.5.0.6\"]\""
+            }
+          }
         }
-      }
+      ]
     }
   ],
   "outputs": {}
