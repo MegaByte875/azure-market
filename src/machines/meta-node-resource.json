@@ -38,7 +38,7 @@
           }
         },
         "namespace": "meta",
-        "resourceGroup": "[resourceGroup().id]",
+        "resourceGroup": "[resourceGroup().name]",
         "storageAccountType": "Standard_LRS",
         "count": 2,
         "imageReference": {
