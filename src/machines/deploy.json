@@ -112,7 +112,7 @@
   ],
   "outputs": {
     "addresses": {
-      "type": "array",
+      "type": "string",
       "value": "[string(reference('nic').outputs.privateAddresses.value)]"
     }
   }
