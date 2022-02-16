@@ -34,7 +34,8 @@
         "namespace": "meta",
         "storageAccountType": "Standard_LRS",
         "count": 2,
-        "platformFaultDomainCount": 3
+        "platformFaultDomainCount": 3,
+        "nebulaNSG": "nebula-os-nsg"
       }
     },
     "nebulaTags": {
@@ -68,7 +69,7 @@
             "value": "[parameters('vm').shared.location]"
           },
           "nebulaNSG": {
-            "value": "nebula-os-nsg"
+            "value": "[parameters('vm').nebulaNSG]"
           },
           "managementPort": {
             "value": "22"
@@ -100,7 +101,7 @@
             "value": "[variables('namespace')]"
           },
           "nebulaNSG": {
-            "value": "nebula-os-nsg"
+            "value": "[parameters('vm').nebulaNSG]"
           },
           "subnetId": {
             "value": "[parameters('vm').shared.subnetId]"
