@@ -64,7 +64,8 @@
   "variables": {
     "namespace": "[parameters('vm').namespace]",
     "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
-    "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]"
+    "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]",
+    "vmTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/vm.json', parameters('_artifactsLocationSasToken')))]"
   },
   "resources": [
     {
@@ -153,7 +154,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('partials/vm.json', parameters('_artifactsLocationSasToken')))]",
+          "uri": "[variables('vmTemplateUrl')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
