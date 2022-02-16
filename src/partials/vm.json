@@ -67,7 +67,8 @@
         }
       }
     },
-    "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]"
+    "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]",
+    "nicName": "[concat(variables('namespace'), parameters('index'), '-nic')]"
   },
   "resources": [
     {
@@ -128,7 +129,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "sh privateip.sh hello world"
+          "commandToExecute": "sh privateip.sh \"[\"10.5.0.5\",\"10.5.0.6\"]\""
         }
       }
     }
