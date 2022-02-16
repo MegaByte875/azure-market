@@ -39,8 +39,8 @@
     "namespace": "[parameters('namespace')]",
     "publicIpName": "[concat(variables('namespace'), '-ip')]",
     "httpsOpts": {
-      "Yes" : "https://",
-      "No" : "http://"
+      "Yes": "https://",
+      "No": "http://"
     },
     "https": "[variables('httpsOpts')[parameters('https')]]"
   },
@@ -63,7 +63,7 @@
   ],
   "outputs": {
     "fqdn": {
-      "value": "[concat(variables('https'), reference(variables('publicIpName')).dnsSettings.fqdn, ':7001')]",
+      "value": "[concat(variables('https'), reference(variables('publicIpName')).dnsSettings.fqdn)]",
       "type": "string"
     }
   }

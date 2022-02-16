@@ -34,28 +34,18 @@
           ]
         },
         "subnets": [
-          [
-            {
-              "name": "[parameters('networkSettings').subnet.name]",
-              "properties": {
-                "addressPrefix": "[parameters('networkSettings').subnet.addressPrefix]"
-              }
-            },
-            {
-              "name": "[parameters('networkSettings').applicationGatewaySubnet.name]",
-              "properties": {
-                "addressPrefix": "[parameters('networkSettings').applicationGatewaySubnet.addressPrefix]"
-              }
+          {
+            "name": "[parameters('networkSettings').subnet.name]",
+            "properties": {
+              "addressPrefix": "[parameters('networkSettings').subnet.addressPrefix]"
             }
-          ],
-          [
-            {
-              "name": "[parameters('networkSettings').subnet.name]",
-              "properties": {
-                "addressPrefix": "[parameters('networkSettings').subnet.addressPrefix]"
-              }
+          },
+          {
+            "name": "[parameters('networkSettings').applicationGatewaySubnet.name]",
+            "properties": {
+              "addressPrefix": "[parameters('networkSettings').applicationGatewaySubnet.addressPrefix]"
             }
-          ]
+          }
         ]
       }
     }

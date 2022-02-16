@@ -122,20 +122,7 @@
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('namespace'), parameters('index')))]"
           ],
-          "properties": {
-            "publisher": "Microsoft.Azure.Extensions",
-            "type": "CustomScript",
-            "typeHandlerVersion": "2.0",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
-              ]
-            },
-            "protectedSettings": {
-              "commandToExecute": "[concat('sh privateip.sh ', parameters('metaAddress'))]"
-            }
-          }
+          "properties": "[parameters('vm').installScript]"
         }
       ]
     }

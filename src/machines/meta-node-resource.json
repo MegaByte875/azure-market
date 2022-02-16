@@ -4,7 +4,6 @@
   "parameters": {
     "_artifactsLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/MegaByte875/azure-market/main/src/",
       "metadata": {
         "description": "Base uri of resources"
       }
@@ -20,34 +19,6 @@
       "type": "object",
       "metadata": {
         "description": "vm configuration"
-      },
-      "defaultValue": {
-        "shared": {
-          "location": "[resourceGroup().location]",
-          "size": "Standard_D2_v3",
-          "subnet": {
-            "name": "ng-subnet",
-            "addressPrefix": "10.5.0.0/24"
-          },
-          "subnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/subnets', 'ngVNet', 'ng-subnet')]",
-          "credentials": {
-            "adminUsername": "azureadmin",
-            "password": "Kfjgkdl*200f9",
-            "authenticationType": "password",
-            "sshPublicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl"
-          }
-        },
-        "namespace": "meta",
-        "resourceGroup": "[resourceGroup().name]",
-        "storageAccountType": "Standard_LRS",
-        "count": 2,
-        "imageReference": {
-          "publisher": "Canonical",
-          "offer": "UbuntuServer",
-          "sku": "18.04-LTS",
-          "version": "latest"
-        },
-        "platformFaultDomainCount": 3
       }
     },
     "nebulaTags": {

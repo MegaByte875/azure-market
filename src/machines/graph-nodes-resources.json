@@ -38,17 +38,13 @@
     {
       "apiVersion": "2020-12-01",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[concat(variables('namespace'), 'av-set')]",
+      "name": "[concat(variables('namespace'), '-av-set')]",
       "location": "[parameters('vm').shared.location]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
-      "copy": {
-        "name": "[concat(variables('namespace'),'av-loop')]",
-        "count": "[parameters('vm').count]"
-      },
       "properties": {
-        "platformUpdateDomainCount": 3,
+        "platformUpdateDomainCount": 1,
         "platformFaultDomainCount": "[parameters('vm').platformFaultDomainCount]"
       },
       "sku": {
@@ -57,10 +53,10 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-12-01",
+      "apiVersion": "2019-10-01",
       "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), 'av-set'))]"
+        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), '-av-set'))]"
       ],
       "copy": {
         "name": "[concat(variables('namespace'),'vm-creation-loop')]",
@@ -80,7 +76,7 @@
             "value": "[copyIndex()]"
           },
           "availabilitySet": {
-            "value": "[concat(variables('namespace'), 'av-set')]"
+            "value": "[concat(variables('namespace'), '-av-set')]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
