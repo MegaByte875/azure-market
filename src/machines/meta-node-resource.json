@@ -29,7 +29,7 @@
             "name": "ng-subnet",
             "addressPrefix": "10.5.0.0/24"
           },
-          "subnetId": "[resourceGroup().id, 'Microsoft.Network/virtualNetworks/subnets', 'ngVNet', 'ng-subnet']",
+          "subnetId": "[resourceId(resourceGroup().id, 'Microsoft.Network/virtualNetworks/subnets', 'ngVNet', 'ng-subnet')]",
           "credentials": {
             "adminUsername": "azureadmin",
             "password": "Kfjgkdl*200f9",
