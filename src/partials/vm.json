@@ -69,7 +69,7 @@
     },
     "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]",
     "nicName": "[concat(variables('namespace'), parameters('index'), '-nic')]",
-    "nicId": "[resourceId(resourceGroup().id, 'Microsoft.Network/networkInterfaces', variables('nicName'))]"
+    "nicId": "[resourceId('ARM_TEST', 'Microsoft.Network/networkInterfaces', variables('nicName'))]"
   },
   "resources": [
     {
