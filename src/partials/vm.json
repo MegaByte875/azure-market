@@ -68,7 +68,8 @@
       }
     },
     "osProfile": "[variables(concat(parameters('vm').shared.credentials.authenticationType, '_osProfile'))]",
-    "nicName": "[concat(variables('namespace'), parameters('index'), '-nic')]"
+    "nicName": "[concat(variables('namespace'), parameters('index'), '-nic')]",
+    "nicId": "[resourceId(parameters('vm').resourceGroup, 'Microsoft.Network/networkInterfaces', variables('nicName'))]"
   },
   "resources": [
     {
@@ -80,7 +81,7 @@
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+        "[variables('nicId')]"
       ],
       "properties": {
         "availabilitySet": {
@@ -104,7 +105,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId(parameters('vm').resourceGroup, 'Microsoft.Network/networkInterfaces', variables('nicName'))]"
+              "id": "[variables('nicId')]"
             }
           ]
         }
