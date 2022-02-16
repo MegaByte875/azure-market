@@ -67,7 +67,7 @@
           "location": {
             "value": "[parameters('vm').shared.location]"
           },
-          "securityGroupName": {
+          "nebulaNSG": {
             "value": "nebula-os-nsg"
           },
           "managementPort": {
@@ -101,6 +101,9 @@
           },
           "namespace": {
             "value": "[variables('namespace')]"
+          },
+          "nebulaNSG": {
+            "value": "nebula-os-nsg"
           },
           "subnetId": {
             "value": "[parameters('vm').shared.subnetId]"
