@@ -32,9 +32,9 @@
           "subnetId": "/subscriptions/4b6023df-58a4-468d-a670-197dffa3a1f7/resourceGroups/ARM_TEST/providers/Microsoft.Network/virtualNetworks/ngVNet/subnets/ng-subnet",
           "credentials": {
             "adminUsername": "azureadmin",
-            "password": "Kfjgkdl*200f9",
-            "authenticationType": "password",
-            "sshPublicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl"
+            "password": "",
+            "authenticationType": "sshPublicKey",
+            "sshPublicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSvoqRHzEWCD30EjBtnQ7VXRB9wLa/r492XuPmQ6cQsDSJNHzhQtJBsVznu4o92zQGA3FHH3iGOgy4d69aIxJwh3EKBSXplV9RqorYgx6SAatXU8jHqtQCejzkVNX/htPkl+/l2Lxrr8HtzYYEdqAPEwyTkPsa08XOOI5evdd9XnCvmy1Ill291cpnIUUzimoUmKStd+cYVVxMOYKAfbyRN2FcAZbO0Zlb8QMTvELBf7vFFilk8KJvPb24qNFpXcZYpL5W84y8wluhFvaFTHQBQFJ9Kg7YTjRlpunmuINEYvLW6Bdk0osQRJMGVkL6Kh2xnmKJMW6mdC0H5PO1hiqN root@192-168-8-176"
           }
         },
         "namespace": "meta",
@@ -166,6 +166,9 @@
           },
           "availabilitySet": {
             "value": "[concat(variables('namespace'), '-av-set')]"
+          },
+          "metaAddress": {
+            "value": "[reference('nic').outputs.privateAddresses.value]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
