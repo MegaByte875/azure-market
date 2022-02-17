@@ -163,7 +163,7 @@
     },
     "vmSizeGraphNodes": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v4",
+      "defaultValue": "Standard_D2as_v4",
       "allowedValues": [
         "Standard_D2as_v4",
         "Standard_D4as_v4",
@@ -223,7 +223,7 @@
     },
     "vmSizeMetaNodes": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v4",
+      "defaultValue": "Standard_D2as_v4",
       "allowedValues": [
         "Standard_D2as_v4",
         "Standard_D4as_v4",
@@ -259,7 +259,7 @@
     },
     "vmSizeStorageNodes": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v4",
+      "defaultValue": "Standard_D2as_v4",
       "allowedValues": [
         "Standard_D2as_v4",
         "Standard_D4as_v4",
