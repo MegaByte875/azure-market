@@ -44,7 +44,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2020-11-01",
+      "apiVersion": "2019-05-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('namespace'), copyIndex(), '-ip')]",
       "location": "[parameters('location')]",
@@ -63,7 +63,7 @@
       }
     },
     {
-      "apiVersion": "2020-11-01",
+      "apiVersion": "2019-05-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('namespace'), copyIndex(), '-nic')]",
       "location": "[parameters('location')]",
