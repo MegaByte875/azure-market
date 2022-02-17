@@ -18,7 +18,7 @@
   "vmSizeStorageNodes":{"value":"Standard_D2as_v4"},
   "vmStorageNodeCount":{"value":1},
   "vmStorageDiskSize":{"value":"32GiB"},
-  "vmHostNamePrefix":{"value":""},
+  "vmHostNamePrefix":{"value":"kevin"},
   "storageAccountType":{"value":"Default"},
   "adminUsername":{"value":"azureadmin"},
   "authenticationType":{"value":"password"},
