@@ -503,7 +503,7 @@
     {
       "name": "[parameters('nebulaTags').tracking]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2019-05-01",
       "properties": {
         "mode": "Incremental",
         "template": {
