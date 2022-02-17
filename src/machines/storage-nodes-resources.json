@@ -86,8 +86,8 @@
       "apiVersion": "2019-05-01",
       "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', concat(variables('namespace'), '-nic-creation'))]",
-        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), '-av-set'))]"
+        "[resourceId('Microsoft.Resources/deployments', concat(variables('namespace'), 'nic-creation'))]",
+        "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), 'av-set'))]"
       ],
       "copy": {
         "name": "[concat(variables('namespace'),'vm-creation-loop')]",
@@ -107,7 +107,7 @@
             "value": "[copyIndex()]"
           },
           "availabilitySet": {
-            "value": "[concat(variables('namespace'), '-av-set')]"
+            "value": "[concat(variables('namespace'), 'av-set')]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"

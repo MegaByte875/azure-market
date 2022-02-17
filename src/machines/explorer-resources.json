@@ -125,7 +125,7 @@
       "name": "[variables('publicIpName')]",
       "location": "[parameters('location')]",
       "tags": {
-        "provider": "[toUpper(parameters('elasticTags').provider)]"
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
