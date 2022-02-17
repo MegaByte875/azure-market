@@ -53,7 +53,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2019-05-01",
       "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), '-av-set'))]"

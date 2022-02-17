@@ -39,7 +39,7 @@
     {
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[concat(variables('namespace'), '-av-set')]",
+      "name": "[concat(variables('namespace'), 'av-set')]",
       "location": "[parameters('vm').shared.location]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -54,8 +54,8 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-04-01",
-      "name": "[concat(variables('namespace'), '-nic-creation')]",
+      "apiVersion": "2019-05-01",
+      "name": "[concat(variables('namespace'), 'nic-creation')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -83,7 +83,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2019-05-01",
       "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', concat(variables('namespace'), '-nic-creation'))]",
