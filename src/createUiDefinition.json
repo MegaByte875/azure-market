@@ -185,20 +185,20 @@
                 "label": "Graph node VM size",
                 "toolTip": "Choose VM SKU size for graph nodes",
                 "recommendedSizes": [
-                  "Standard_D2s_v5",
-                  "Standard_D4s_v5",
-                  "Standard_D8s_v5"
+                  "Standard_D2s_v4",
+                  "Standard_D4s_v4",
+                  "Standard_D8s_v4"
                 ],
                 "constraints": {
                   "allowedSizes": [
-                    "Standard_D2as_v5",
-                    "Standard_D4as_v5",
-                    "Standard_D8as_v5",
-                    "Standard_D16as_v5",
-                    "Standard_D32as_v5",
-                    "Standard_D48as_v5",
-                    "Standard_D64as_v5",
-                    "Standard_D96as_v5",
+                    "Standard_D2as_v4",
+                    "Standard_D4as_v4",
+                    "Standard_D8as_v4",
+                    "Standard_D16as_v4",
+                    "Standard_D32as_v4",
+                    "Standard_D48as_v4",
+                    "Standard_D64as_v4",
+                    "Standard_D96as_v4",
                     "Standard_E2s_v3",
                     "Standard_E4s_v3",
                     "Standard_E8s_v3",
@@ -264,17 +264,17 @@
                 "label": "Meta node VM size",
                 "toolTip": "Choose VM SKU size for meta nodes",
                 "recommendedSizes": [
-                  "Standard_D2s_v5",
-                  "Standard_D4s_v5",
-                  "Standard_D8s_v5"
+                  "Standard_D2s_v4",
+                  "Standard_D4s_v4",
+                  "Standard_D8s_v4"
                 ],
                 "constraints": {
                   "allowedSizes": [
-                    "Standard_D2as_v5",
-                    "Standard_D4as_v5",
-                    "Standard_D8as_v5",
-                    "Standard_D16as_v5",
-                    "Standard_D32as_v5",
+                    "Standard_D2as_v4",
+                    "Standard_D4as_v4",
+                    "Standard_D8as_v4",
+                    "Standard_D16as_v4",
+                    "Standard_D32as_v4",
                     "Standard_F2s_v2",
                     "Standard_F4s_v2",
                     "Standard_F8s_v2",
@@ -364,20 +364,20 @@
                 "label": "Storage node VM size",
                 "toolTip": "Choose VM SKU size for storage nodes",
                 "recommendedSizes": [
-                  "Standard_D2s_v5",
-                  "Standard_D4s_v5",
-                  "Standard_D8s_v5"
+                  "Standard_D2s_v4",
+                  "Standard_D4s_v4",
+                  "Standard_D8s_v4"
                 ],
                 "constraints": {
                   "allowedSizes": [
-                    "Standard_D2as_v5",
-                    "Standard_D4as_v5",
-                    "Standard_D8as_v5",
-                    "Standard_D16as_v5",
-                    "Standard_D32as_v5",
-                    "Standard_D48as_v5",
-                    "Standard_D64as_v5",
-                    "Standard_D96as_v5",
+                    "Standard_D2as_v4",
+                    "Standard_D4as_v4",
+                    "Standard_D8as_v4",
+                    "Standard_D16as_v4",
+                    "Standard_D32as_v4",
+                    "Standard_D48as_v4",
+                    "Standard_D64as_v4",
+                    "Standard_D96as_v4",
                     "Standard_F2s_v2",
                     "Standard_F4s_v2",
                     "Standard_F8s_v2",

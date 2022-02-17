@@ -85,7 +85,7 @@
     },
     "explorer": {
       "type": "string",
-      "defaultValue": "No",
+      "defaultValue": "Yes",
       "allowedValues": [
         "Yes",
         "No"
@@ -124,7 +124,7 @@
     },
     "dashboard": {
       "type": "string",
-      "defaultValue": "No",
+      "defaultValue": "Yes",
       "allowedValues": [
         "Yes",
         "No"
@@ -163,16 +163,16 @@
     },
     "vmSizeGraphNodes": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v5",
+      "defaultValue": "Standard_D2s_v4",
       "allowedValues": [
-        "Standard_D2as_v5",
-        "Standard_D4as_v5",
-        "Standard_D8as_v5",
-        "Standard_D16as_v5",
-        "Standard_D32as_v5",
-        "Standard_D48as_v5",
-        "Standard_D64as_v5",
-        "Standard_D96as_v5",
+        "Standard_D2as_v4",
+        "Standard_D4as_v4",
+        "Standard_D8as_v4",
+        "Standard_D16as_v4",
+        "Standard_D32as_v4",
+        "Standard_D48as_v4",
+        "Standard_D64as_v4",
+        "Standard_D96as_v4",
         "Standard_E2s_v3",
         "Standard_E4s_v3",
         "Standard_E8s_v3",
@@ -230,13 +230,13 @@
     },
     "vmSizeMetaNodes": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v5",
+      "defaultValue": "Standard_D2s_v4",
       "allowedValues": [
-        "Standard_D2as_v5",
-        "Standard_D4as_v5",
-        "Standard_D8as_v5",
-        "Standard_D16as_v5",
-        "Standard_D32as_v5",
+        "Standard_D2as_v4",
+        "Standard_D4as_v4",
+        "Standard_D8as_v4",
+        "Standard_D16as_v4",
+        "Standard_D32as_v4",
         "Standard_F2s_v2",
         "Standard_F4s_v2",
         "Standard_F8s_v2",
@@ -270,16 +270,16 @@
     },
     "vmSizeStorageNodes": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v5",
+      "defaultValue": "Standard_D2s_v4",
       "allowedValues": [
-        "Standard_D2as_v5",
-        "Standard_D4as_v5",
-        "Standard_D8as_v5",
-        "Standard_D16as_v5",
-        "Standard_D32as_v5",
-        "Standard_D48as_v5",
-        "Standard_D64as_v5",
-        "Standard_D96as_v5",
+        "Standard_D2as_v4",
+        "Standard_D4as_v4",
+        "Standard_D8as_v4",
+        "Standard_D16as_v4",
+        "Standard_D32as_v4",
+        "Standard_D48as_v4",
+        "Standard_D64as_v4",
+        "Standard_D96as_v4",
         "Standard_F2s_v2",
         "Standard_F4s_v2",
         "Standard_F8s_v2",
@@ -322,6 +322,14 @@
       ],
       "metadata": {
         "description": "The disk size of each attached managed disk, Default is 32GiB."
+      }
+    },
+    "vmHostNamePrefix": {
+      "type": "string",
+      "defaultValue": "",
+      "maxLength": 5,
+      "metadata": {
+        "description": "The prefix to use for resources and hostnames when naming virtual machines in the cluster."
       }
     },
     "storageAccountType": {
@@ -444,34 +452,14 @@
       "metadata": {
         "description": "The address space of the Application Gateway subnet. Required when creating a new Virtual Network and selecting Application Gateway for load balancing"
       }
-    },
-    "appGatewayTier": {
-      "type": "string",
-      "defaultValue": "Standard",
-      "allowedValues": [
-        "Standard",
-        "Standard V2"
-      ],
-      "metadata": {
-        "description": "The tier of the Application Gateway. Required when selecting Application Gateway for load balancing"
-      }
-    },
-    "appGatewayCount": {
-      "type": "int",
-      "defaultValue": 2,
-      "minValue": 1,
-      "maxValue": 10,
-      "metadata": {
-        "description": "The number of instances of the Application Gateway. A minimum of 2 is recommended for Production clusters. Required when selecting Application Gateway for load balancing"
-      }
     }
   },
   "variables": {
     "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
     "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
-    "appGatewayOptions": "[concat(toLower(parameters('appGatewayTier')),'-application-gateway-resources')]",
-    "appGatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateway/', variables('loadBalancerOptions')[parameters('loadBalancerType')],'.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
+    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
+    "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]",
     "location": "[parameters('location')]",
     "ngSettings": {
       "clusterName": "[parameters('ngClusterName')]",
@@ -483,57 +471,6 @@
       "new": "[resourceGroup().name]",
       "existing": "[parameters('vNetExistingResourceGroup')]"
     },
-    "dataDiskSizes": {
-      "16GiB": 16,
-      "32GiB": 32,
-      "64GiB": 64,
-      "128GiB": 128,
-      "256GiB": 256,
-      "512GiB": 512,
-      "1TiB": 1024,
-      "2TiB": 2048,
-      "4TiB": 4096
-    },
-    "backendPoolConfigurations": {
-      "gateway": [
-        {
-          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', concat(parameters('vmHostNamePrefix'), 'internal-lb'), 'LBBE')]"
-        }
-      ]
-    },
-    "lbBackEndPoolsAdded": {
-      "backendPools": "[variables('backendPoolConfigurations')[parameters('loadBalancerType')]]"
-    },
-    "lbBackendPoolsRemoved": {
-      "backendPools": []
-    },
-    "dataLoadBalancerOptions": [
-      "[variables('lbBackEndPoolsAdded')]",
-      "[variables('lbBackEndPoolsRemoved')]"
-    ],
-    "clientResourceIndex": "[mod(add(parameters('vmClientNodeCount'),2),add(parameters('vmClientNodeCount'),1))]",
-    "storageAccountOverrides": {
-      "Default": "[variables('dataSkuSettings')[parameters('vmSizeDataNodes')].storageAccountType]",
-      "Standard": "Standard_LRS"
-    },
-    "resolvedStorageAccountType": "[variables('storageAccountOverrides')[parameters('storageAccountType')]]",
-    "tmpVmSizeDataDisks": "[variables('dataSkuSettings')[parameters('vmSizeDataNodes')].dataDisks]",
-    "dataDiskOptions": [
-      "[parameters('vmDataDiskCount')]",
-      "[variables('tmpVmSizeDataDisks')]"
-    ],
-    "resolvedDataDiskCount": "[min(variables('dataDiskOptions'))]",
-    "newSubNetStartAddress": "[if(equals('new', parameters('vNetNewOrExisting')), first(split(parameters('vNetNewClusterSubnetAddressPrefix'), '/')), '')]",
-    "newSubNetStartAddressLastOctet": "[if(equals('new', parameters('vNetNewOrExisting')), int(last(split(variables('newSubNetStartAddress'), '.'))), 0)]",
-    "newSubNetStartAddressFirstOctets": "[if(equals('new', parameters('vNetNewOrExisting')), substring(variables('newSubNetStartAddress'), 0, lastIndexOf(variables('newSubNetStartAddress'), '.')), '')]",
-    "newSubNetReservedStartAddresses": [
-      "[variables('newSubNetStartAddress')]",
-      "[concat(variables('newSubNetStartAddressFirstOctets'), '.', string(add(variables('newSubNetStartAddressLastOctet'), 1)))]",
-      "[concat(variables('newSubNetStartAddressFirstOctets'), '.', string(add(variables('newSubNetStartAddressLastOctet'), 2)))]",
-      "[concat(variables('newSubNetStartAddressFirstOctets'), '.', string(add(variables('newSubNetStartAddressLastOctet'), 3)))]"
-    ],
-    "newSubNetFirstAvailableAddress": "[concat(variables('newSubNetStartAddressFirstOctets'), '.', string(add(variables('newSubNetStartAddressLastOctet'), 4)))]",
-    "vNetLoadBalancerIp": "[if(equals('existing', parameters('vNetNewOrExisting')), parameters('vNetLoadBalancerIp'), if(contains(variables('newSubNetReservedStartAddresses'), parameters('vNetLoadBalancerIp')), variables('newSubNetFirstAvailableAddress'), parameters('vNetLoadBalancerIp')))]",
     "topologySettings": {
       "vmGraphNodeCount": "[parameters('vmGraphNodeCount')]",
       "vmSizeGraphNodes": "[parameters('vmSizeGraphNodes')]",
@@ -548,15 +485,7 @@
       "explorer": "[parameters('explorer')]",
       "vmSizeDashboard": "[parameters('vmSizeDashboard')]",
       "dashboard": "[parameters('dashboard')]",
-      "vmHostNamePrefix": "[parameters('vmHostNamePrefix')]",
-      "vNetLoadBalancerIp": "[variables('vNetLoadBalancerIp')]",
-      "dataNodeStorageSettings": {
-        "accountType": "[variables('resolvedStorageAccountType')]",
-        "diskSize": "[variables('dataDiskSizes')[parameters('vmDataDiskSize')]]",
-        "dataDisks": "[variables('resolvedDataDiskCount')]"
-      },
-      "dataLoadBalancerBackEndPools": "[variables('dataLoadBalancerOptions')[variables('clientResourceIndex')].backendPools]",
-      "loadBalancerBackEndPools": "[variables('lbBackEndPoolsAdded').backendPools]"
+      "vmHostNamePrefix": "[parameters('vmHostNamePrefix')]"
     },
     "networkSettings": {
       "name": "[parameters('vNetName')]",
@@ -564,11 +493,9 @@
       "resourceGroup": "[variables('networkResourceGroupMap')[parameters('vNetNewOrExisting')]]",
       "location": "[variables('location')]",
       "addressPrefix": "[parameters('vNetNewAddressPrefix')]",
-      "https": "[if(and(or(greater(length(parameters('ngHttpCertBlob')), 0), greater(length(parameters('ngHttpCaCertBlob')), 0))))), 'Yes', 'No')]",
       "subnet": {
         "name": "[parameters('vNetClusterSubnetName')]",
-        "addressPrefix": "[parameters('vNetNewClusterSubnetAddressPrefix')]",
-        "loadbalancerIp": "[variables('vNetLoadBalancerIp')]"
+        "addressPrefix": "[parameters('vNetNewClusterSubnetAddressPrefix')]"
       },
       "applicationGatewaySubnet": {
         "name": "[parameters('vNetAppGatewaySubnetName')]",
@@ -576,7 +503,9 @@
       }
     },
     "commonVmSettings": {
+      "namespacePrefix": "[parameters('vmHostNamePrefix')]",
       "storageAccountName": "[concat('nebula', uniqueString(resourceGroup().id, deployment().name))]",
+      "nebulaNSG": "[concat(parameters('vmHostNamePrefix'), '-os-NSG')]",
       "location": "[variables('location')]",
       "subnet": "[variables('networkSettings').subnet]",
       "subnetId": "[resourceId(variables('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', variables('networkSettings').name, variables('networkSettings').subnet.name)]",
@@ -586,15 +515,6 @@
         "authenticationType": "[parameters('authenticationType')]",
         "sshPublicKey": "[parameters('sshPublicKey')]"
       }
-    },
-    "applicationGatewaySettings": {
-      "skuName": "[concat(parameters('appGatewayTier'), '_', parameters('appGatewaySku'))]",
-      "tier": "[parameters('appGatewayTier')]",
-      "instanceCount": "[parameters('appGatewayCount')]",
-      "certBlob": "[parameters('appGatewayCertBlob')]",
-      "certPassword": "[parameters('appGatewayCertPassword')]",
-      "backendCert": "[parameters('appGatewayEsHttpCertBlob')]",
-      "backendProtocol": "[if(or(greater(length(parameters('ngHttpCertBlob')), 0), greater(length(parameters('ngHttpCaCertBlob')), 0)), 'Https', 'Http')]"
     }
   },
   "resources": [
@@ -628,9 +548,6 @@
           "storageAccountName": {
             "value": "[variables('commonVmSettings').storageAccountName]"
           },
-          "azureCloudStorageAccount": {
-            "value": "[variables('azureCloudStorageAccount')]"
-          },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }
@@ -659,38 +576,66 @@
       }
     },
     {
-      "name": "loadbalancer",
+      "name": "nebulaNSG",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'shared')]",
-        "[resourceId('Microsoft.Resources/deployments', 'network')]"
-      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('loadBalancerTemplateUrl')]",
+          "uri": "[variables('securityGroupTemplateUrl')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "networkSettings": {
-            "value": "[variables('networkSettings')]"
+          "location": {
+            "value": "[variables('commonVmSettings').location]"
           },
-          "applicationGatewaySettings": {
-            "value": "[variables('applicationGatewaySettings')]"
+          "nebulaNSG": {
+            "value": "[concat(variables('commonVmSettings').nebulaNSG)]"
           },
-          "nebulaTags": {
-            "value": "[parameters('nebulaTags')]"
+          "managementPort": {
+            "value": "22"
           }
         }
       }
     },
     {
-      "name": "virtual-machines",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "name": "metaNICs",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('interfaceTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('commonVmSettings').location]"
+          },
+          "count": {
+            "value": "[variables('topologySettings').vmMetaNodeCount]"
+          },
+          "namespace": {
+            "value": "[concat(variables('commonVmSettings').namespacePrefix, '-meta-')]"
+          },
+          "nebulaNSG": {
+            "value": "[variables('commonVmSettings').nebulaNSG]"
+          },
+          "subnetId": {
+            "value": "[variables('commonVmSettings').subnetId]"
+          }
+        }
+      }
+    },
+    {
+      "name": "virtualMachines",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'loadbalancer')]"
+        "[resourceId('Microsoft.Resources/deployments', 'shared')]",
+        "[resourceId('Microsoft.Resources/deployments', 'network')]",
+        "[resourceId('Microsoft.Resources/deployments', 'nebulaNSG')]",
+        "[resourceId('Microsoft.Resources/deployments', 'metaNICs')]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -717,14 +662,8 @@
           "networkSettings": {
             "value": "[variables('networkSettings')]"
           },
-          "azureCloudStorageAccount": {
-            "value": {
-              "name": "[variables('azureCloudStorageAccount').name]",
-              "resourceGroup": "[variables('azureCloudStorageAccount').resourceGroup]",
-              "install": "[variables('azureCloudStorageAccount').install]",
-              "key": "[reference('shared').outputs.existingStorageAccountKey.value]",
-              "suffix": "[reference('shared').outputs.existingStorageAccountSuffix.value]"
-            }
+           "metaAddress": {
+            "value": "[replace(replace(string(reference('metaNICs').outputs.privateAddresses.value), '[', ''), ']', '')]"
           },
           "sharedStorageAccount": {
             "value": {

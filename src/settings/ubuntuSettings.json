@@ -5,7 +5,7 @@
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
-          "description": "The base URI where artifacts required by this template are located including a trailing '/'"
+        "description": "The base URI where artifacts required by this template are located including a trailing '/'"
       }
     },
     "_artifactsLocationSasToken": {
@@ -16,22 +16,22 @@
       "defaultValue": ""
     },
     "ngSettings": {
-        "type": "object",
-        "metadata": {
-            "description" : "The NebulaGraph settings"
-        }
+      "type": "object",
+      "metadata": {
+        "description": "The NebulaGraph settings"
+      }
     },
     "commonVmSettings": {
-        "type": "object",
-        "metadata": {
-            "description" : "Shared VM settings"
-        }
+      "type": "object",
+      "metadata": {
+        "description": "Shared VM settings"
+      }
     },
     "topologySettings": {
-        "type": "object",
-        "metadata": {
-            "description": "Aggregate for topology variable"
-        }
+      "type": "object",
+      "metadata": {
+        "description": "Aggregate for topology variable"
+      }
     },
     "networkSettings": {
       "type": "object",
@@ -39,10 +39,10 @@
         "description": "Network settings"
       }
     },
-    "azureCloudStorageAccount": {
-      "type": "secureObject",
+    "metaAddress": {
+      "type": "string",
       "metadata": {
-          "description": "The storage settings for the Azure Cloud plugin"
+        "description": "The address of meta nodes"
       }
     },
     "sharedStorageAccount": {
@@ -62,45 +62,19 @@
     }
   },
   "variables": {
-    "quote": "'",
-    "doublequote": "\"",
-    "backslash": "\\",
-    "escapedQuote": "[concat(variables('quote'), variables('doublequote'), variables('quote'), variables('doublequote'), variables('quote'))]",
     "nodesTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/node-resources.json', parameters('_artifactsLocationSasToken')))]",
-    "namespacePrefix": "[parameters('topologySettings').vmHostNamePrefix]",
-    "dataNodeShortOpts": {
-      "No": "z",
-      "Yes": ""
-    },
-    "dataNodeShortOpt": "[variables('dataNodeShortOpts')[parameters('topologySettings').dataNodesAreMasterEligible]]",
-    "dedicatedMasterNodesShortOpts": {
-      "No": "d",
-      "Yes": ""
-    },
-    "dedicatedMasterNodesShortOpt": "[variables('dedicatedMasterNodesShortOpts')[parameters('topologySettings').dataNodesAreMasterEligible]]",
-    "installAzureCloudPluginShortOpts": {
-      "No": "",
-      "Yes": "j"
-    },
-    "installAzureCloudPluginShortOpt": "[variables('installAzureCloudPluginShortOpts')[parameters('azureCloudStorageAccount').install]]",
-    "azureCloudStorageName": "[if(equals(parameters('azureCloudStorageAccount').install, 'Yes'), if(empty(parameters('azureCloudStorageAccount').name), parameters('sharedStorageAccount').name, parameters('azureCloudStorageAccount').name), '')]",
-    "azureCloudStorageKey": "[if(equals(parameters('azureCloudStorageAccount').install, 'Yes'), if(empty(parameters('azureCloudStorageAccount').key), parameters('sharedStorageAccount').key, parameters('azureCloudStorageAccount').key), '')]",
-    "azureCloudStorageSuffix": "[if(equals(parameters('azureCloudStorageAccount').install, 'Yes'), if(empty(parameters('azureCloudStorageAccount').name), parameters('sharedStorageAccount').suffix, parameters('azureCloudStorageAccount').suffix), '')]",
-    "installPluginsShortOpts": {
-      "No": "",
-      "Yes": "l"
-    },
-    "installPluginsShortOpt": "[variables('installPluginsShortOpts')[parameters('ngSettings').installPlugins]]",
-    "commonShortOpts": "[concat(variables('dedicatedMasterNodesShortOpt'),  variables('installPluginsShortOpt'), variables('installAzureCloudPluginShortOpt'), 'n ')]",
-    "commonInstallParams": "",
     "ubuntuScripts": [
-      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-install.sh', parameters('_artifactsLocationSasToken')))]"
+      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/dashboard-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/studio-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/explorer-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]"
     ],
     "ubuntuSettings": {
       "imageReference": {
         "publisher": "Canonical",
         "offer": "UbuntuServer",
-        "sku": "16.04.0-LTS",
+        "sku": "18.04-LTS",
         "version": "latest"
       },
       "managementPort": 22,
@@ -114,7 +88,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": ""
+            "commandToExecute": "[concat('bash nebula-install.sh ', '-c graphd ', '-m', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
           }
         },
         "meta": {
@@ -126,7 +100,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": ""
+            "commandToExecute": "[concat('bash nebula-install.sh ', '-c metad ', '-m', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
           }
         },
         "storage": {
@@ -138,7 +112,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": ""
+            "commandToExecute": "[concat('bash nebula-install.sh ', '-c storaged ', '-m', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
           }
         },
         "studio": {
@@ -150,7 +124,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": ""
+            "commandToExecute": "[concat('bash studio-install.sh ')]"
           }
         },
         "explorer": {
@@ -162,7 +136,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": ""
+            "commandToExecute": "[concat('bash explorer-install.sh ')]"
           }
         },
         "dashboard": {
@@ -174,7 +148,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": ""
+            "commandToExecute": "[concat('bash dashboard-install.sh ')]"
           }
         }
       }
@@ -185,7 +159,7 @@
       "name": "nebula-nodes",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
-      "dependsOn": [ ],
+      "dependsOn": [],
       "properties": {
         "mode": "Incremental",
         "templateLink": {

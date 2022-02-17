@@ -32,7 +32,8 @@
     }
   },
   "variables": {
-    "namespace": "[parameters('vm').namespace]"
+    "namespace": "[parameters('vm').namespace]",
+    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]"
   },
   "resources": [
     {
@@ -53,9 +54,39 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "name": "[concat(variables('namespace'), '-nic-creation')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('interfaceTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[parameters('vm').shared.location]"
+          },
+          "count": {
+            "value": "[parameters('vm').count]"
+          },
+          "namespace": {
+            "value": "[variables('namespace')]"
+          },
+          "nebulaNSG": {
+            "value": "[parameters('vm').shared.nebulaNSG]"
+          },
+          "subnetId": {
+            "value": "[parameters('vm').shared.subnetId]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-10-01",
       "name": "[concat(variables('namespace'), copyIndex(), '-vm-creation')]",
       "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', concat(variables('namespace'), '-nic-creation'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('namespace'), '-av-set'))]"
       ],
       "copy": {
