@@ -159,7 +159,7 @@
     {
       "name": "nebula-nodes",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2019-05-01",
       "dependsOn": [],
       "properties": {
         "mode": "Incremental",
