@@ -68,7 +68,8 @@
       "[uri(parameters('_artifactsLocation'), concat('scripts/dashboard-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/studio-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/explorer-install.sh', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]"
+      "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
     ],
     "ubuntuSettings": {
       "imageReference": {
@@ -88,7 +89,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash nebula-install.sh ', '-c graphd ', '-m', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash privateip.sh ', ' graph ', parameters('metaAddress'), ' ', parameters('ngSettings').version)]"
           }
         },
         "meta": {
@@ -100,7 +101,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash nebula-install.sh ', '-c metad ', '-m', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash privateip.sh ', ' meta ', parameters('metaAddress'), ' ', parameters('ngSettings').version)]"
           }
         },
         "storage": {
@@ -112,7 +113,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash nebula-install.sh ', '-c storaged ', '-m', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash privateip.sh ', ' storage ', parameters('metaAddress'), ' ', parameters('ngSettings').version)]"
           }
         },
         "studio": {
