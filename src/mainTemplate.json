@@ -503,7 +503,7 @@
     {
       "name": "[parameters('nebulaTags').tracking]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -516,7 +516,7 @@
     {
       "name": "shared",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -540,7 +540,7 @@
       "condition": "[equals(parameters('vNetNewOrExisting'), 'new')]",
       "name": "network",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -560,7 +560,7 @@
     {
       "name": "nebulaNSG",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -582,7 +582,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "name": "metaNICs",
       "properties": {
         "mode": "Incremental",
@@ -612,7 +612,7 @@
     {
       "name": "virtualMachines",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'shared')]",
         "[resourceId('Microsoft.Resources/deployments', 'network')]",

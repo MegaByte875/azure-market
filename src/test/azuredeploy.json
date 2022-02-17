@@ -98,7 +98,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('securityGroupName')]",
       "location": "[parameters('location')]",
@@ -139,7 +139,7 @@
       }
     },
     {
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[parameters('location')]",
@@ -219,7 +219,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('namespace'), '/script')]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2019-04-01",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('namespace'))]"
