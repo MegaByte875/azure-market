@@ -38,7 +38,7 @@
     {
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[concat(variables('namespace'), '-av-set')]",
+      "name": "[concat(variables('namespace'), 'av-set')]",
       "location": "[parameters('vm').shared.location]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
