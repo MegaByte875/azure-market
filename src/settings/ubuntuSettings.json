@@ -89,7 +89,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash privateip.sh ', ' graph ', parameters('metaAddress'), ' ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash nebula-install.sh ', ' -c graphd ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
           }
         },
         "meta": {
@@ -101,7 +101,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash privateip.sh ', ' meta ', parameters('metaAddress'), ' ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash nebula-install.sh ', ' -c metad ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
           }
         },
         "storage": {
@@ -113,7 +113,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash privateip.sh ', ' storage ', parameters('metaAddress'), ' ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash nebula-install.sh ', '-c storaged ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
           }
         },
         "studio": {
