@@ -18,6 +18,10 @@
           "studioLoadBalancerIp": "10.0.0.10",
           "explorerBalancerIp": "10.0.0.11",
           "dashboardLoadBalancerIp": "10.0.0.12"
+        },
+        "applicationGatewaySubnet": {
+          "name": "ng-gateway-subnet",
+          "addressPrefix": "10.0.0.240/28"
         }
       }
     },
@@ -79,7 +83,7 @@
         },
         "gatewayIPConfigurations": [
           {
-            "name": "ng-app-gateway-ip",
+            "name": "appGwIpConfig",
             "properties": {
               "subnet": {
                 "id": "[resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('networkSettings').name, parameters('networkSettings').applicationGatewaySubnet.name)]"
