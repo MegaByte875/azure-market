@@ -661,5 +661,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "artifactsLocation": {
+      "type": "string",
+      "value": "[parameters('_artifactsLocation')]"
+    }
+  }
 }
