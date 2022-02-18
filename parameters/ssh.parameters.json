@@ -21,7 +21,7 @@
   "vmHostNamePrefix":{"value":"kevin"},
   "storageAccountType":{"value":"Default"},
   "adminUsername":{"value":"azureadmin"},
-  "authenticationType":{"value":"password"},
+  "authenticationType":{"value":"sshPublicKey"},
   "sshPublicKey":{"value":""},
   "adminPassword":{"value":"<value-ignored>"},
   "securityAdminPassword":{"value":"XS28489f4a"},
