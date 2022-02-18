@@ -113,7 +113,7 @@
             "value": "[copyIndex()]"
           },
           "availabilitySet": {
-            "value": "[concat(variables('namespace'), '-av-set')]"
+            "value": "[concat(variables('namespace'), 'av-set')]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
