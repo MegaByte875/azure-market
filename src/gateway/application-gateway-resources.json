@@ -6,12 +6,31 @@
       "type": "object",
       "metadata": {
         "description": "Network settings object"
+      },
+      "defaultValue": {
+        "name": "ngVNet",
+        "namespacePrefix": "kevin-",
+        "resourceGroup": "ARM_TEST",
+        "location": "[resourceGroup().location]",
+        "subnet": {
+          "name": "ng-subnet",
+          "addressPrefix": "10.0.0.0/25",
+          "studioLoadBalancerIp": "10.0.0.10",
+          "explorerBalancerIp": "10.0.0.11",
+          "dashboardLoadBalancerIp": "10.0.0.12"
+        }
       }
     },
     "applicationGatewaySettings": {
       "type": "object",
       "metadata": {
         "description": "Application Gateway settings"
+      },
+      "defaultValue": {
+        "skuName": "Standard",
+        "tier": "Medium",
+        "instanceCount": "1",
+        "backendProtocol": "Http"
       }
     },
     "nebulaTags": {
