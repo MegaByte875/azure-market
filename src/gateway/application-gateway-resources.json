@@ -31,7 +31,7 @@
         "description": "Application Gateway settings"
       },
       "defaultValue": {
-        "skuName": "Small",
+        "skuName": "Standard_Small",
         "tier": "Standard",
         "instanceCount": "1",
         "backendProtocol": "Http"
