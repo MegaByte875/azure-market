@@ -388,7 +388,7 @@
     },
     "vNetName": {
       "type": "string",
-      "defaultValue": "ng-net",
+      "defaultValue": "ngVNet",
       "metadata": {
         "description": "Virtual Network Name"
       }
@@ -661,10 +661,5 @@
       }
     }
   ],
-  "outputs": {
-    "artifactsLocation": {
-      "type": "string",
-      "value": "[parameters('_artifactsLocation')]"
-    }
-  }
+  "outputs": {}
 }
