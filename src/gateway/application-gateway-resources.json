@@ -8,7 +8,7 @@
         "description": "Network settings object"
       },
       "defaultValue": {
-        "name": "ngVNet",
+        "name": "agVNet",
         "namespacePrefix": "kevin-",
         "resourceGroup": "ARM_TEST",
         "location": "[resourceGroup().location]",
