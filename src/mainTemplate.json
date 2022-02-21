@@ -506,6 +506,13 @@
         "authenticationType": "[parameters('authenticationType')]",
         "sshPublicKey": "[parameters('sshPublicKey')]"
       }
+    },
+    "securityGroupSettings": {
+      "nebulaNSG": "[variables('commonVmSettings').nebulaNSG]",
+      "studioNSG": "[concat(variables('commonVmSettings').studioNamespace, '-nsg')]",
+      "explorerNSG": "[concat(variables('commonVmSettings').explorerNamespace, '-nsg')]",
+      "dashboardNSG": "[concat(variables('commonVmSettings').dashboardNamespace, '-nsg')]",
+      "managementPort": 22
     }
   },
   "resources": [
@@ -580,20 +587,8 @@
           "location": {
             "value": "[variables('commonVmSettings').location]"
           },
-          "nebulaNSG": {
-            "value": "[variables('commonVmSettings').nebulaNSG]"
-          },
-          "studioNSG": {
-            "value": "[concat(variables('commonVmSettings').studioNamespace, '-nsg')]"
-          },
-          "explorerNSG": {
-            "value": "[concat(variables('commonVmSettings').explorerNamespace, '-nsg')]"
-          },
-          "dashboardNSG": {
-            "value": "[concat(variables('commonVmSettings').dashboardNamespace, '-nsg')]"
-          },
-          "managementPort": {
-            "value": "22"
+          "securityGroupSettings": {
+            "value": "[variables('securityGroupSettings')]"
           },
           "topologySettings": {
             "value": "[variables('topologySettings')]"
