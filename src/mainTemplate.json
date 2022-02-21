@@ -434,11 +434,87 @@
       "metadata": {
         "description": "The address space of the Application Gateway subnet. Required when creating a new Virtual Network and selecting Application Gateway for load balancing"
       }
+    },
+    "appGatewayTier": {
+      "type": "string",
+      "defaultValue": "Standard_v2",
+      "allowedValues": [
+        "Standard_v2",
+        "WAF_v2"
+      ],
+      "metadata": {
+        "description": "The tier of the Application Gateway. Required when selecting Application Gateway for load balancing"
+      }
+    },
+    "appGatewaySku": {
+      "type": "string",
+      "defaultValue": "Standard_v2",
+      "allowedValues": [
+        "Standard_v2",
+        "WAF_v2"
+      ],
+      "metadata": {
+        "description": "The size of the Application Gateway"
+      }
+    },
+    "appGatewayCount": {
+      "type": "int",
+      "defaultValue": 2,
+      "minValue": 1,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of instances of the Application Gateway. A minimum of 2 is recommended for Production clusters"
+      }
+    },
+    "appGatewayCertBlob": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the key and certificate for the Application Gateway. This certificate is used to secure HTTPS connections to the Application Gateway"
+      }
+    },
+    "appGatewayCertPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the key and certificate for the Application Gateway."
+      }
+    },
+    "appGatewayWafStatus": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "The firewall status of the Application Gateway. Required when selecting Application Gateway for load balancing and using WAF tier."
+      }
+    },
+    "appGatewayWafMode": {
+      "type": "string",
+      "defaultValue": "Detection",
+      "allowedValues": [
+        "Detection",
+        "Prevention"
+      ],
+      "metadata": {
+        "description": "The firewall mode of the Application Gateway. Required when selecting Application Gateway for load balancing and using WAF tier."
+      }
+    },
+    "appGatewayNgHttpCertBlob": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The Base-64 encoded certificate (.cer) used to secure the HTTP layer of NebulaGraph. Used by the Application Gateway to whitelist certificates used by the backend pool"
+      }
     }
   },
   "variables": {
     "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
     "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateway/application-gateway-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateway/application-gateway-resources.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
     "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
     "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
@@ -513,6 +589,13 @@
       "explorerNSG": "[concat(variables('commonVmSettings').explorerNamespace, '-nsg')]",
       "dashboardNSG": "[concat(variables('commonVmSettings').dashboardNamespace, '-nsg')]",
       "managementPort": 22
+    },
+    "applicationGatewaySettings": {
+      "skuName": "[parameters('appGatewayTier')]",
+      "tier": "[parameters('appGatewayTier')]",
+      "minCapacity": 2,
+      "maxCapacity": 10,
+      "backendProtocol": "Http"
     }
   },
   "resources": [
@@ -725,6 +808,71 @@
         }
       }
     },
+        {
+      "name": "gatwayIP",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('gatewayIPTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('commonVmSettings').location]"
+          },
+          "namespace": {
+            "value": "[variables('commonVmSettings').namespacePrefix]"
+          },
+          "https": {
+            "value": "NO"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "gateway",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'shared')]",
+        "[resourceId('Microsoft.Resources/deployments', 'gatewayIP')]",
+        "[resourceId('Microsoft.Resources/deployments', 'studioNIC')]",
+        "[resourceId('Microsoft.Resources/deployments', 'explorerNIC')]",
+        "[resourceId('Microsoft.Resources/deployments', 'dashboardNIC')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('gatewayTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "networkSettings": {
+            "value": "[variables('networkSettings')]"
+          },
+          "applicationGatewaySettings": {
+            "value": "[variables('applicationGatewaySettings')]"
+          },
+          "studioAddress": {
+            "value": "[reference('studioNIC').outputs.studioAddress.value]"
+          },
+          "explorerAddress": {
+            "value": "[reference('explorerNIC').outputs.explorerAddress.value]"
+          },
+          "dashboardAddress": {
+            "value": "[reference('dashboardNIC').outputs.dashboardAddress.value]"
+          },
+          "elasticTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
     {
       "name": "virtualMachines",
       "type": "Microsoft.Resources/deployments",
@@ -732,9 +880,7 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'shared')]",
         "[resourceId('Microsoft.Resources/deployments', 'metaNICs')]",
-        "[resourceId('Microsoft.Resources/deployments', 'studioNIC')]",
-        "[resourceId('Microsoft.Resources/deployments', 'explorerNIC')]",
-        "[resourceId('Microsoft.Resources/deployments', 'dashboardNIC')]"
+        "[resourceId('Microsoft.Resources/deployments', 'gateway')]"
       ],
       "properties": {
         "mode": "Incremental",

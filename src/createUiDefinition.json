@@ -800,7 +800,6 @@
       "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
       "securityDashboardPassword": "[steps('securityStep').dashboard_admin.securityDashboardPassword]",
       "appGatewayTier": "Standard_v2",
-      "appGatewayCount": 1,
       "location": "[location()]"
     }
   }

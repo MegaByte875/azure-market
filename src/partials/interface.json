@@ -104,7 +104,7 @@
       "type": "array",
       "copy": {
         "count": "[parameters('count')]",
-        "input": "[reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress]"
+        "input": "[concat(reference(resourceId('Microsoft.Network/networkInterfaces', concat(parameters('namespace'), copyIndex(), '-nic'))).ipConfigurations[0].properties.privateIPAddress, ':9559')]"
       }
     }
   }
