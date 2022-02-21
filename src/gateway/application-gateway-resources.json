@@ -62,7 +62,7 @@
         "name": "Standard"
       },
       "properties": {
-        "publicIPAllocationMethod": "Dynamic"
+        "publicIPAllocationMethod": "Static"
       },
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
