@@ -867,7 +867,7 @@
           "dashboardAddress": {
             "value": "[reference('dashboardNIC').outputs.dashboardAddress.value]"
           },
-          "elasticTags": {
+          "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }
         }
