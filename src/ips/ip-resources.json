@@ -56,7 +56,7 @@
       "properties": {
         "publicIPAllocationMethod": "Static",
         "dnsSettings": {
-          "domainNameLabel": "[concat('ng-', uniqueString(resourceGroup().id, deployment().name, variables('publicIpName')))]"
+          "domainNameLabel": "[concat(uniqueString(resourceGroup().id, deployment().name, variables('publicIpName')))]"
         }
       },
       "tags": {
