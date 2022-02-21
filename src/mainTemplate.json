@@ -494,7 +494,7 @@
       "storageNamespace": "[concat(parameters('vmHostNamePrefix'), '-storage-')]",
       "dashboardNamespace": "[concat(parameters('vmHostNamePrefix'), '-dashboard')]",
       "studioNamespace": "[concat(parameters('vmHostNamePrefix'), '-studio')]",
-      "explorerdNamespace": "[concat(parameters('vmHostNamePrefix'), '-explorer')]",
+      "explorerNamespace": "[concat(parameters('vmHostNamePrefix'), '-explorer')]",
       "storageAccountName": "[concat('nebula', uniqueString(resourceGroup().id, deployment().name))]",
       "nebulaNSG": "[concat(parameters('vmHostNamePrefix'), '-os-NSG')]",
       "location": "[variables('location')]",
@@ -587,7 +587,7 @@
             "value": "[concat(variables('commonVmSettings').studioNamespace, '-nsg')]"
           },
           "explorerNSG": {
-            "value": "[concat(variables('commonVmSettings').explorerdNamespace, '-nsg')]"
+            "value": "[concat(variables('commonVmSettings').explorerNamespace, '-nsg')]"
           },
           "dashboardNSG": {
             "value": "[concat(variables('commonVmSettings').dashboardNamespace, '-nsg')]"
@@ -686,7 +686,7 @@
             "value": "[variables('commonVmSettings').location]"
           },
           "namespace": {
-            "value": "[variables('commonVmSettings').explorerdNamespace]"
+            "value": "[variables('commonVmSettings').explorerNamespace]"
           },
           "networkSettings": {
             "value": "[variables('networkSettings')]"

@@ -239,7 +239,7 @@
     },
     {
       "condition": "[equals(parameters('topologySettings').explorer, 'Yes')]",
-      "name": "exploer",
+      "name": "explorer",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
       "dependsOn": [],
@@ -254,7 +254,7 @@
             "value": "[parameters('commonVmSettings').location]"
           },
           "namespace": {
-            "value": "[parameters('commonVmSettings').explorerdNamespace]"
+            "value": "[parameters('commonVmSettings').explorerNamespace]"
           },
           "credentials": {
             "value": "[parameters('commonVmSettings').credentials]"
