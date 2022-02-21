@@ -675,12 +675,12 @@
                 "constraints": {
                   "allowedValues": [
                     {
-                      "label": "Standard",
-                      "value": "Standard"
+                      "label": "Standard V2",
+                      "value": "Standard_v2"
                     },
                     {
-                      "label": "Standard V2",
-                      "value": "Standard V2"
+                      "label": "WAF V2",
+                      "value": "WAF_v2"
                     }
                   ]
                 }
@@ -799,7 +799,7 @@
       "sshPublicKey": "[basics('password').sshPublicKey]",
       "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
       "securityDashboardPassword": "[steps('securityStep').dashboard_admin.securityDashboardPassword]",
-      "appGatewayTier": "Standard",
+      "appGatewayTier": "Standard_v2",
       "appGatewayCount": 1,
       "location": "[location()]"
     }
