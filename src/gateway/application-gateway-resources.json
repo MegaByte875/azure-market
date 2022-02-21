@@ -31,9 +31,10 @@
         "description": "Application Gateway settings"
       },
       "defaultValue": {
-        "skuName": "Standard_Small",
-        "tier": "Standard",
-        "instanceCount": "1",
+        "skuName": "Standard_v2",
+        "tier": "Standard_v2",
+        "minCapacity": 2,
+        "maxCapacity": 10,
         "backendProtocol": "Http"
       }
     },
@@ -78,8 +79,11 @@
       "properties": {
         "sku": {
           "name": "[parameters('applicationGatewaySettings').skuName]",
-          "tier": "[parameters('applicationGatewaySettings').tier]",
-          "capacity": "[parameters('applicationGatewaySettings').instanceCount]"
+          "tier": "[parameters('applicationGatewaySettings').tier]"
+        },
+        "autoscaleConfiguration": {
+          "minCapacity": "[parameters('applicationGatewaySettings').minCapacity]",
+          "maxCapacity": "[parameters('applicationGatewaySettings').maxCapacity]"
         },
         "gatewayIPConfigurations": [
           {
