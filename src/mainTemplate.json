@@ -826,7 +826,7 @@
             "value": "[variables('commonVmSettings').namespacePrefix]"
           },
           "https": {
-            "value": "NO"
+            "value": "No"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
