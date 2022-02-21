@@ -37,20 +37,23 @@
     "securityGroupName": "[concat(variables('namespace'), '-nsg')]",
     "nicName": "[concat(variables('namespace'), '-nic')]"
   },
-  "resources":[
+  "resources": [
     {
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIpName')]",
       "location": "[parameters('location')]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      "sku": {
+        "name": "Standard"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
           "domainNameLabel": "[concat('explorer-', uniqueString(resourceGroup().id, deployment().name))]"
         }
+      },
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
       }
     },
     {
@@ -58,9 +61,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[parameters('location')]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
+      "dependsOn": [
+        "[variables('publicIpName')]"
+      ],
       "properties": {
         "primary": true,
         "ipConfigurations": [
@@ -80,10 +83,13 @@
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroupName'))]"
         }
+      },
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
       }
     }
   ],
-    "outputs": {
+  "outputs": {
     "explorerAddress": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress]"
