@@ -513,8 +513,8 @@
   "variables": {
     "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
     "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
-    "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateway/application-gateway-resources.json', parameters('_artifactsLocationSasToken')))]",
-    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateway/application-gateway-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('ips/ip-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateways/application-gateway-resources.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
     "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
     "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
