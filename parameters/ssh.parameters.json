@@ -13,7 +13,7 @@
   "vmGraphNodeCount":{"value":1},
   "vmGraphDiskSize":{"value":"10GiB"},
   "vmSizeMetaNodes":{"value":"Standard_D2as_v4"},
-  "vmMetaNodeCount":{"value":1},
+  "vmMetaNodeCount":{"value":3},
   "vmMetaDiskSize":{"value":"20GiB"},
   "vmSizeStorageNodes":{"value":"Standard_D2as_v4"},
   "vmStorageNodeCount":{"value":1},
