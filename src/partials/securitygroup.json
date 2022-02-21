@@ -8,34 +8,16 @@
         "description": "Location where resources will be provisioned"
       }
     },
-    "nebulaNSG": {
-      "type": "string",
+    "securityGroupSettings": {
+      "type": "object",
       "metadata": {
-        "description": "The name of Nebula nodes network security group"
+        "description": "Aggregate for security group variable"
       }
     },
-    "studioNSG": {
-      "type": "string",
+    "topologySettings": {
+      "type": "object",
       "metadata": {
-        "description": "The name of Studio node network security group"
-      }
-    },
-    "explorerNSG": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of Explorer node network security group"
-      }
-    },
-    "dashboardNSG": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of Dashboard node network security group"
-      }
-    },
-    "managementPort": {
-      "type": "string",
-      "metadata": {
-        "description": "The management port for SSH"
+        "description": "Aggregate for topology variable"
       }
     },
     "nebulaTags": {
@@ -52,7 +34,7 @@
     {
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[parameters('nebulaNSG')]",
+      "name": "[parameters('securityGroupSettings').nebulaNSG]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -65,7 +47,7 @@
               "description": "Allows inbound SSH traffic from anyone",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "[parameters('managementPort')]",
+              "destinationPortRange": "[parameters('securityGroupSettings').managementPort]",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -77,9 +59,10 @@
       }
     },
     {
+      "condition": "[equals(parameters('topologySettings').studio, 'Yes')]",
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[parameters('studioNSG')]",
+      "name": "[parameters('securityGroupSettings').studioNSG]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -92,7 +75,7 @@
               "description": "Allows inbound SSH traffic from anyone",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "[parameters('managementPort')]",
+              "destinationPortRange": "[parameters('securityGroupSettings').managementPort]",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -118,9 +101,10 @@
       }
     },
     {
+      "condition": "[equals(parameters('topologySettings').explorer, 'Yes')]",
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[parameters('explorerNSG')]",
+      "name": "[parameters('securityGroupSettings').explorerNSG]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -133,7 +117,7 @@
               "description": "Allows inbound SSH traffic from anyone",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "[parameters('managementPort')]",
+              "destinationPortRange": "[parameters('securityGroupSettings').managementPort]",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -159,9 +143,10 @@
       }
     },
     {
+      "condition": "[equals(parameters('topologySettings').dashboard, 'Yes')]",
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[parameters('dashboardNSG')]",
+      "name": "[parameters('securityGroupSettings').dashboardNSG]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -174,7 +159,7 @@
               "description": "Allows inbound SSH traffic from anyone",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "[parameters('managementPort')]",
+              "destinationPortRange": "[parameters('securityGroupSettings').managementPort]",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",

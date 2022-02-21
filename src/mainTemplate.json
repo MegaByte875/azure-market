@@ -595,6 +595,9 @@
           "managementPort": {
             "value": "22"
           },
+          "topologySettings": {
+            "value": "[variables('topologySettings')]"
+          },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }
