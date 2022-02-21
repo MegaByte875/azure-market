@@ -77,9 +77,6 @@
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
