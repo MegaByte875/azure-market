@@ -47,7 +47,7 @@
         "name": "Standard"
       },
       "properties": {
-        "publicIPAllocationMethod": "Dynamic",
+        "publicIPAllocationMethod": "Static",
         "dnsSettings": {
           "domainNameLabel": "[concat('explorer-', uniqueString(resourceGroup().id, deployment().name))]"
         }
