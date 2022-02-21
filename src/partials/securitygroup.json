@@ -11,7 +11,25 @@
     "nebulaNSG": {
       "type": "string",
       "metadata": {
-        "description": "The name of nebula nodes network security group"
+        "description": "The name of Nebula nodes network security group"
+      }
+    },
+    "studioNSG": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of Studio node network security group"
+      }
+    },
+    "explorerNSG": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of Explorer node network security group"
+      }
+    },
+    "dashboardNSG": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of Dashboard node network security group"
       }
     },
     "managementPort": {
@@ -52,6 +70,129 @@
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 100,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('studioNSG')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "SSH",
+            "properties": {
+              "description": "Allows inbound SSH traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "[parameters('managementPort')]",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Studio",
+            "properties": {
+              "description": "Allows inbound Studio traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "7001",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('explorerNSG')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "SSH",
+            "properties": {
+              "description": "Allows inbound SSH traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "[parameters('managementPort')]",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Explorer",
+            "properties": {
+              "description": "Allows inbound Explorer traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "7002",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('dashboardNSG')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "SSH",
+            "properties": {
+              "description": "Allows inbound SSH traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "[parameters('managementPort')]",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Dashboard",
+            "properties": {
+              "description": "Allows inbound Dashboard traffic from anyone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "7005",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 200,
               "direction": "Inbound"
             }
           }

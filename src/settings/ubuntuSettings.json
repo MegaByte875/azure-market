@@ -183,9 +183,6 @@
           "topologySettings": {
             "value": "[parameters('topologySettings')]"
           },
-          "networkSettings": {
-            "value": "[parameters('networkSettings')]"
-          },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }

@@ -440,7 +440,10 @@
     "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
     "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
-    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
+    "metaInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/meta-interface.json', parameters('_artifactsLocationSasToken')))]",
+    "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
+    "explorerInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/explorer-interface.json', parameters('_artifactsLocationSasToken')))]",
+    "dashboardInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/dashboard-interface.json', parameters('_artifactsLocationSasToken')))]",
     "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]",
     "location": "[parameters('location')]",
     "ngSettings": {
@@ -486,6 +489,12 @@
     },
     "commonVmSettings": {
       "namespacePrefix": "[parameters('vmHostNamePrefix')]",
+      "graphNamespace": "[concat(parameters('vmHostNamePrefix'), '-graph-')]",
+      "metaNamespace": "[concat(parameters('vmHostNamePrefix'), '-meta-')]",
+      "storageNamespace": "[concat(parameters('vmHostNamePrefix'), '-storage-')]",
+      "dashboardNamespace": "[concat(parameters('vmHostNamePrefix'), '-dashboard')]",
+      "studioNamespace": "[concat(parameters('vmHostNamePrefix'), '-studio')]",
+      "explorerdNamespace": "[concat(parameters('vmHostNamePrefix'), '-explorer')]",
       "storageAccountName": "[concat('nebula', uniqueString(resourceGroup().id, deployment().name))]",
       "nebulaNSG": "[concat(parameters('vmHostNamePrefix'), '-os-NSG')]",
       "location": "[variables('location')]",
@@ -558,7 +567,7 @@
       }
     },
     {
-      "name": "nebulaNSG",
+      "name": "nsg",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
       "properties": {
@@ -572,10 +581,22 @@
             "value": "[variables('commonVmSettings').location]"
           },
           "nebulaNSG": {
-            "value": "[concat(variables('commonVmSettings').nebulaNSG)]"
+            "value": "[variables('commonVmSettings').nebulaNSG]"
+          },
+          "studioNSG": {
+            "value": "[concat(variables('commonVmSettings').studioNamespace, '-nsg')]"
+          },
+          "explorerNSG": {
+            "value": "[concat(variables('commonVmSettings').explorerdNamespace, '-nsg')]"
+          },
+          "dashboardNSG": {
+            "value": "[concat(variables('commonVmSettings').dashboardNamespace, '-nsg')]"
           },
           "managementPort": {
             "value": "22"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
           }
         }
       }
@@ -584,10 +605,14 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
       "name": "metaNICs",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'network')]",
+        "[resourceId('Microsoft.Resources/deployments', 'nsg')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('interfaceTemplateUrl')]",
+          "uri": "[variables('metaInterfaceTemplateUrl')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -598,13 +623,106 @@
             "value": "[variables('topologySettings').vmMetaNodeCount]"
           },
           "namespace": {
-            "value": "[concat(variables('commonVmSettings').namespacePrefix, '-meta-')]"
+            "value": "[variables('commonVmSettings').metaNamespace]"
           },
           "nebulaNSG": {
             "value": "[variables('commonVmSettings').nebulaNSG]"
           },
           "subnetId": {
             "value": "[variables('commonVmSettings').subnetId]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "name": "studioNIC",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'network')]",
+        "[resourceId('Microsoft.Resources/deployments', 'nsg')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('studioInterfaceTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('commonVmSettings').location]"
+          },
+          "namespace": {
+            "value": "[variables('commonVmSettings').studioNamespace]"
+          },
+          "networkSettings": {
+            "value": "[variables('networkSettings')]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "name": "explorerNIC",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'network')]",
+        "[resourceId('Microsoft.Resources/deployments', 'nsg')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('explorerInterfaceTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('commonVmSettings').location]"
+          },
+          "namespace": {
+            "value": "[variables('commonVmSettings').explorerdNamespace]"
+          },
+          "networkSettings": {
+            "value": "[variables('networkSettings')]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "name": "dashboardNIC",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'network')]",
+        "[resourceId('Microsoft.Resources/deployments', 'nsg')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('dashboardInterfaceTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('commonVmSettings').location]"
+          },
+          "namespace": {
+            "value": "[variables('commonVmSettings').dashboardNamespace]"
+          },
+          "networkSettings": {
+            "value": "[variables('networkSettings')]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
           }
         }
       }
@@ -615,9 +733,10 @@
       "apiVersion": "2019-05-01",
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'shared')]",
-        "[resourceId('Microsoft.Resources/deployments', 'network')]",
-        "[resourceId('Microsoft.Resources/deployments', 'nebulaNSG')]",
-        "[resourceId('Microsoft.Resources/deployments', 'metaNICs')]"
+        "[resourceId('Microsoft.Resources/deployments', 'metaNICs')]",
+        "[resourceId('Microsoft.Resources/deployments', 'studioNIC')]",
+        "[resourceId('Microsoft.Resources/deployments', 'explorerNIC')]",
+        "[resourceId('Microsoft.Resources/deployments', 'dashboardNIC')]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -644,7 +763,7 @@
           "networkSettings": {
             "value": "[variables('networkSettings')]"
           },
-           "metaAddress": {
+          "metaAddress": {
             "value": "[replace(replace(string(reference('metaNICs').outputs.privateAddresses.value), '[', ''), ']', '')]"
           },
           "sharedStorageAccount": {

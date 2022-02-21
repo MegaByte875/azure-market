@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location where resources will be provisioned"
+      }
+    },
+    "namespace": {
+      "type": "string",
+      "metadata": {
+        "description": "The unique namespace for the Dashboard VM"
+      }
+    },
+    "networkSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Network settings"
+      }
+    },
+    "nebulaTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+      },
+      "metadata": {
+        "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
+      }
+    }
+  },
+  "variables": {
+    "namespace": "[parameters('namespace')]",
+    "subnetId": "[resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('networkSettings').name, parameters('networkSettings').subnet.name)]",
+    "publicIpName": "[concat(variables('namespace'), '-ip')]",
+    "securityGroupName": "[concat(variables('namespace'), '-nsg')]",
+    "nicName": "[concat(variables('namespace'), '-nic')]"
+  },
+  "resources":[
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIpName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[concat('dashboard-', uniqueString(resourceGroup().id, deployment().name))]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "provider": "[toUpper(parameters('nebulaTags').provider)]"
+      },
+      "properties": {
+        "primary": true,
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpName'))]"
+              },
+              "subnet": {
+                "id": "[variables('subnetId')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroupName'))]"
+        }
+      }
+    }
+  ],
+    "outputs": {
+    "dashboardAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress]"
+    }
+  }
+}

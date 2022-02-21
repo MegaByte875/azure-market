@@ -14,12 +14,6 @@
         "description": "The unique namespace for the Studio VM"
       }
     },
-    "networkSettings": {
-      "type": "object",
-      "metadata": {
-        "description": "Network settings"
-      }
-    },
     "credentials": {
       "type": "secureObject",
       "metadata": {
@@ -51,17 +45,14 @@
   },
   "variables": {
     "namespace": "[parameters('namespace')]",
-    "subnetId": "[resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('networkSettings').name, parameters('networkSettings').subnet.name)]",
-    "publicIpName": "[concat(variables('namespace'), '-ip')]",
-    "securityGroupName": "[concat(variables('namespace'), '-nsg')]",
     "nicName": "[concat(variables('namespace'), '-nic')]",
     "password_osProfile": {
-      "computername": "[parameters('namespace')]",
+      "computername": "[variables('namespace')]",
       "adminUsername": "[parameters('credentials').adminUsername]",
       "adminPassword": "[parameters('credentials').password]"
     },
     "sshPublicKey_osProfile": {
-      "computername": "[parameters('namespace')]",
+      "computername": "[variables('namespace')]",
       "adminUsername": "[parameters('credentials').adminUsername]",
       "linuxConfiguration": {
         "disablePasswordAuthentication": "true",
@@ -79,97 +70,9 @@
   },
   "resources": [
     {
-      "apiVersion": "2019-04-01",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('securityGroupName')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
-      "properties": {
-        "securityRules": [
-          {
-            "name": "SSH",
-            "properties": {
-              "description": "Allows inbound SSH traffic from anyone",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "[parameters('osSettings').managementPort]",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "Studio",
-            "properties": {
-              "description": "Allows inbound Studio traffic from anyone",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "7001",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 200,
-              "direction": "Inbound"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2019-04-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIpName')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "dnsSettings": {
-          "domainNameLabel": "[concat('studio-', uniqueString(resourceGroup().id, deployment().name))]"
-        }
-      }
-    },
-    {
-      "apiVersion": "2019-04-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroupName'))]"
-      ],
-      "properties": {
-        "primary": true,
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpName'))]"
-              },
-              "subnet": {
-                "id": "[variables('subnetId')]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroupName'))]"
-        }
-      }
-    },
-    {
       "apiVersion": "2019-03-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('namespace')]",
+      "name": "[variables('namespace')]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
@@ -208,7 +111,7 @@
       "apiVersion": "2019-03-01",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('namespace'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('namespace'))]"
       ],
       "properties": "[parameters('osSettings').extensionSettings.studio]"
     }
