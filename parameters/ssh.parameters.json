@@ -22,7 +22,7 @@
   "storageAccountType":{"value":"Default"},
   "adminUsername":{"value":"azureadmin"},
   "authenticationType":{"value":"sshPublicKey"},
-  "sshPublicKey":{"value":"ssh-rsa <generate>"},
+  "sshPublicKey":{"value":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSvoqRHzEWCD30EjBtnQ7VXRB9wLa/r492XuPmQ6cQsDSJNHzhQtJBsVznu4o92zQGA3FHH3iGOgy4d69aIxJwh3EKBSXplV9RqorYgx6SAatXU8jHqtQCejzkVNX/htPkl+/l2Lxrr8HtzYYEdqAPEwyTkPsa08XOOI5evdd9XnCvmy1Ill291cpnIUUzimoUmKStd+cYVVxMOYKAfbyRN2FcAZbO0Zlb8QMTvELBf7vFFilk8KJvPb24qNFpXcZYpL5W84y8wluhFvaFTHQBQFJ9Kg7YTjRlpunmuINEYvLW6Bdk0osQRJMGVkL6Kh2xnmKJMW6mdC0H5PO1hiqN root@192-168-8-176"},
   "adminPassword":{"value":"<value-ignored>"},
   "securityAdminPassword":{"value":"XS28489f4a"},
   "securityDashboardPassword":{"value":"FK41aeB619"},

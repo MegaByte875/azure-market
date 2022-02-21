@@ -440,7 +440,7 @@
     "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
     "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
-    "metaInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/meta-interface.json', parameters('_artifactsLocationSasToken')))]",
+    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
     "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
     "explorerInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/explorer-interface.json', parameters('_artifactsLocationSasToken')))]",
     "dashboardInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/dashboard-interface.json', parameters('_artifactsLocationSasToken')))]",
@@ -612,7 +612,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('metaInterfaceTemplateUrl')]",
+          "uri": "[variables('interfaceTemplateUrl')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
