@@ -152,6 +152,18 @@
         "bladeTitle": "Nodes Configuration",
         "elements": [
           {
+            "name": "namePrefix",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Name prefix",
+            "defaultValue": "",
+            "toolTip": "The prefix to use for hostnames when naming virtual machines in the cluster",
+            "constraints": {
+              "required": false,
+              "regex": "^[0-9a-zA-Z][0-9a-zA-Z\\-]{0,4}$",
+              "validationMessage": "Name prefix must start with an alphanumeric character and can contain alphanumeric or hyphen characters, up to 10 characters in length"
+            }
+          },
+          {
             "name": "graphNodes",
             "type": "Microsoft.Common.Section",
             "label": "Graph nodes",
@@ -775,6 +787,7 @@
       "vmSizeExplorer": "[steps('externalAccessStep').explorerSection.vmSizeExplorer]",
       "dashboard": "[steps('externalAccessStep').dashboardSection.dashboard]",
       "vmSizeDashboard": "[steps('externalAccessStep').dashboardSection.vmSizeDashboard]",
+      "vmHostNamePrefix": "[steps('nodesStep').namePrefix]",
       "vmSizeGraphNodes": "[steps('nodesStep').graphNodes.vmSizeGraphNodes]",
       "vmGraphNodeCount": "[steps('nodesStep').graphNodes.vmGraphNodeCount]",
       "vmGraphDiskSize": "10GiB",

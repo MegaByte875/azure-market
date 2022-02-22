@@ -68,8 +68,7 @@
       "[uri(parameters('_artifactsLocation'), concat('scripts/dashboard-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/studio-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/explorer-install.sh', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/privateip.sh', parameters('_artifactsLocationSasToken')))]"
+      "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]"
     ],
     "ubuntuSettings": {
       "imageReference": {

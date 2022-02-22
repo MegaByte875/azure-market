@@ -308,7 +308,7 @@
     },
     "vmHostNamePrefix": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "ng",
       "maxLength": 10,
       "metadata": {
         "description": "The prefix to use for resources and hostnames when naming virtual machines in the cluster."
