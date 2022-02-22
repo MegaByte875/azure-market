@@ -1,0 +1,16 @@
+[Unit]
+Description=Nebula Graph Metad Service
+After=network.target
+
+[Service]
+Type=forking
+Restart=always
+RestartSec=10s
+PIDFile=/usr/local/nebula/pids/nebula-metad.pid
+ExecStart=/usr/local/nebula/scripts/nebula.service start metad
+ExecReload=/usr/local/nebula/scripts/nebula.service restart metad
+ExecStop=/usr/local/nebula/scripts/nebula.service stop metad
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
