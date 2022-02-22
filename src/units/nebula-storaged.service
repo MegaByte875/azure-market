@@ -1,0 +1,16 @@
+[Unit]
+Description=Nebula Graph Storaged Service
+After=network.target
+
+[Service]
+Type=forking
+Restart=always
+RestartSec=10s
+PIDFile=/usr/local/nebula/pids/nebula-storaged.pid
+ExecStart=/usr/local/nebula/scripts/nebula.service start storaged
+ExecReload=/usr/local/nebula/scripts/nebula.service restart storaged
+ExecStop=/usr/local/nebula/scripts/nebula.service stop storaged
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
