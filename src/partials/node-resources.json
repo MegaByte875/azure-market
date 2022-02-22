@@ -47,7 +47,7 @@
       "metadata": {
         "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
       }
-    },
+    }
   },
   "variables": {
     "kibanaTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('kibanaTemplates')[parameters('topologySettings').kibana], parameters('_artifactsLocationSasToken')))]",
@@ -326,7 +326,7 @@
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
-          },
+          }
         }
       }
     }
