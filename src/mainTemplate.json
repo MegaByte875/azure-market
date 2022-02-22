@@ -503,8 +503,8 @@
     },
     "installGateway": "[if(and(equals('No', parameters('studio')), equals('No', parameters('explorer')), equals('No', parameters('dashboard'))), 'No', 'Yes')]",
     "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('gatewayIpTemplates')[variables('installGateway')], parameters('_artifactsLocationSasToken')))]",
-    "gatewayOptions": "[concat(toLower(split(parameters('appGatewayTier'), '_')[0]),'-application-gateway-resources')]",
-    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateways/', variables('gatewayOptions')[parameters('appGatewayTier')],'.json', parameters('_artifactsLocationSasToken')))]",
+    "gatewayOptions": "[concat(toLower(split(parameters('appGatewayTier'), '_')[0]), '-application-gateway-resources')]",
+    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateways/', variables('gatewayOptions'), '.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
     "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
     "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
@@ -798,7 +798,7 @@
         }
       }
     },
-        {
+    {
       "name": "gatewayIP",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
