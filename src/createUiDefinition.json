@@ -54,18 +54,10 @@
             "name": "ngVersion",
             "type": "Microsoft.Common.DropDown",
             "label": "NebulaGraph version",
-            "defaultValue": "v2.6.1",
+            "defaultValue": "v2.6.2",
             "toolTip": "Choose a version of NebulaGraph.",
             "constraints": {
               "allowedValues": [
-                {
-                  "label": "v2.6.0",
-                  "value": "v2.6.0"
-                },
-                {
-                  "label": "v2.6.1",
-                  "value": "v2.6.1"
-                },
                 {
                   "label": "v2.6.2",
                   "value": "v2.6.2"
@@ -87,6 +79,22 @@
               "required": true,
               "regex": "[^\\s]+$",
               "validationMessage": "Cluster has trailing whitespace"
+            }
+          },
+          {
+            "name": "ngLicenseBlob",
+            "type": "Microsoft.Common.FileUpload",
+            "label": "NebulaGraph License",
+            "toolTip": "The nebula graph ent license for all nebula products",
+            "constraints": {
+              "required": true,
+              "accept": ".license"
+            },
+            "options": {
+              "multiple": false,
+              "openMode": "text",
+              "uploadMode": "file",
+              "encoding": "UTF-8"
             }
           },
           {
@@ -671,7 +679,7 @@
                 "type": "Microsoft.Common.DropDown",
                 "label": "Application gateway tier",
                 "defaultValue": "Standard",
-                "toolTip": "Choose application gateway SKU, Standard or Standard V2.",
+                "toolTip": "Choose application gateway SKU, Standard V2 or WAF V2.",
                 "constraints": {
                   "allowedValues": [
                     {
@@ -747,42 +755,15 @@
             ]
           }
         ]
-      },
-      {
-        "name": "licensesStep",
-        "label": "License",
-        "subLabel": {
-          "preValidation": "Required",
-          "postValidation": "Done"
-        },
-        "bladeTitle": "License",
-        "elements": [{
-          "name": "ngLicenseBlob",
-          "type": "Microsoft.Common.FileUpload",
-          "label": "Nebula Graph License",
-          "toolTip": "The nebula graph ent license for all nebula products",
-          "constraints": {
-            "required": true,
-            "accept": ".license"
-          },
-          "options": {
-            "multiple": false,
-            "openMode": "text",
-            "uploadMode": "file",
-            "encoding": "UTF-8"
-          }
-        }
-        ]
       }
     ],
     "outputs": {
       "ngVersion": "[steps('clusterSettingsStep').ngVersion]",
       "ngClusterName": "[steps('clusterSettingsStep').ngClusterName]",
-      "ngLicenseBlob": "[steps('licensesStep').ngLicenseBlob]",
+      "ngLicenseBlob": "[steps('clusterSettingsStep').ngLicenseBlob]",
       "vNetNewOrExisting": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.newOrExisting]",
       "vNetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.name]",
       "vNetClusterSubnetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.name]",
-      "vNetAppGatewayIp": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.startAddress]",
       "vNetExistingResourceGroup": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.resourceGroup]",
       "vNetNewAddressPrefix": "[first(steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.addressPrefixes)]",
       "vNetNewClusterSubnetAddressPrefix": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.addressPrefix]",
@@ -811,6 +792,11 @@
       "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
       "securityDashboardPassword": "[steps('securityStep').dashboard_admin.securityDashboardPassword]",
       "appGatewayTier": "Standard_v2",
+      "appGatewaySku": "Standard_v2",
+      "appGatewayCertBlob": "",
+      "appGatewayCertPassword": "",
+      "appGatewayWafStatus": "Disabled",
+      "appGatewayWafMode": "Detection",
       "location": "[location()]"
     }
   }

@@ -20,7 +20,7 @@
       "type": "object",
       "defaultValue": {
         "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9",
-        "tracking": "pid-B2C934E3-29F3-4194-BFD2-4F1370B78E0C"
+        "tracking": "pid-AFF9EA5A-C011-4F6A-98DB-70046FDBF455"
       },
       "metadata": {
         "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
