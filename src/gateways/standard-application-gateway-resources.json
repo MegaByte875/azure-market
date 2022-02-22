@@ -181,8 +181,7 @@
               "frontendPort": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('applicationGatewayName'), 'ng-studio-fport')]"
               },
-              "protocol": "Http",
-              "HostName": "[concat('studio.', uniqueString(resourceGroup().id, deployment().name, variables('applicationGatewayIp')))]"
+              "protocol": "Http"
             }
           },
           {
@@ -194,8 +193,7 @@
               "frontendPort": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('applicationGatewayName'), 'ng-explorer-fport')]"
               },
-              "protocol": "Http",
-              "HostName": "[concat('explorer.', uniqueString(resourceGroup().id, deployment().name, variables('applicationGatewayIp')))]"
+              "protocol": "Http"
             }
           },
           {
@@ -207,8 +205,7 @@
               "frontendPort": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('applicationGatewayName'), 'ng-dashboard-fport')]"
               },
-              "protocol": "Http",
-              "HostName": "[concat('dashboard.', uniqueString(resourceGroup().id, deployment().name, variables('applicationGatewayIp')))]"
+              "protocol": "Http"
             }
           }
         ],

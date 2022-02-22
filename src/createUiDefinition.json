@@ -747,22 +747,6 @@
             ]
           }
         ]
-      },
-      {
-        "name": "tags",
-        "label": "Tags",
-        "elements": [
-          {
-            "name": "tagsByResource",
-            "type": "Microsoft.Common.TagsByResource",
-            "resources": [
-              "Microsoft.Compute/virtualMachines",
-              "Microsoft.Network/virtualNetworks",
-              "Microsoft.Network/loadBalancers",
-              "Microsoft.Compute/disks"
-            ]
-          }
-        ]
       }
     ],
     "outputs": {

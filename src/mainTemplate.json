@@ -457,15 +457,6 @@
         "description": "The size of the Application Gateway"
       }
     },
-    "appGatewayCount": {
-      "type": "int",
-      "defaultValue": 2,
-      "minValue": 1,
-      "maxValue": 10,
-      "metadata": {
-        "description": "The number of instances of the Application Gateway. A minimum of 2 is recommended for Production clusters"
-      }
-    },
     "appGatewayCertBlob": {
       "type": "string",
       "defaultValue": "",
@@ -501,20 +492,19 @@
       "metadata": {
         "description": "The firewall mode of the Application Gateway. Required when selecting Application Gateway for load balancing and using WAF tier."
       }
-    },
-    "appGatewayNgHttpCertBlob": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The Base-64 encoded certificate (.cer) used to secure the HTTP layer of NebulaGraph. Used by the Application Gateway to whitelist certificates used by the backend pool"
-      }
     }
   },
   "variables": {
     "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
     "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
-    "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('ips/ip-resources.json', parameters('_artifactsLocationSasToken')))]",
-    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateways/application-gateway-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "gatewayIpTemplates": {
+      "No": "empty/empty-ip-resources.json",
+      "Yes": "ips/ip-resources.json"
+    },
+    "installGateway": "[if(and(equals('No', parameters('studio')), equals('No', parameters('explorer')), equals('No', parameters('dashboard'))), 'No', 'Yes')]",
+    "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('gatewayIpTemplates')[variables('installGateway')], parameters('_artifactsLocationSasToken')))]",
+    "gatewayOptions": "[concat(toLower(split(parameters('appGatewayTier'), '_')[0]),'-application-gateway-resources')]",
+    "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateways/', variables('gatewayOptions')[parameters('appGatewayTier')],'.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
     "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
     "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
@@ -591,7 +581,7 @@
       "managementPort": 22
     },
     "applicationGatewaySettings": {
-      "skuName": "[parameters('appGatewayTier')]",
+      "skuName": "[parameters('appGatewaySku')]",
       "tier": "[parameters('appGatewayTier')]",
       "minCapacity": 2,
       "maxCapacity": 10,
@@ -924,5 +914,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "gateway": {
+      "value": "[reference('gatewayIP').outputs.fqdn.value]",
+      "type": "string"
+    }
+  }
 }

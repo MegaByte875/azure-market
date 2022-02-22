@@ -11,7 +11,7 @@
     "namespace": {
       "type": "string",
       "metadata": {
-        "description": "The unique namespace for the Frontend VM"
+        "description": "The unique namespace for the IP address"
       }
     },
     "https": {
@@ -56,7 +56,7 @@
       "properties": {
         "publicIPAllocationMethod": "Static",
         "dnsSettings": {
-          "domainNameLabel": "[concat(uniqueString(resourceGroup().id, deployment().name, variables('publicIpName')))]"
+          "domainNameLabel": "[concat('ng-', uniqueString(resourceGroup().id, deployment().name, variables('publicIpName')))]"
         }
       },
       "tags": {
