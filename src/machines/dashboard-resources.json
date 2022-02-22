@@ -75,12 +75,6 @@
         "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
       }
     },
-    "ngSettings": {
-      "type": "object",
-      "metadata": {
-        "description" : "The NebulaGraph settings"
-      }
-    }
   },
   "variables": {
     "virtualNetworkName": "ngVNet",
@@ -241,7 +235,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat(parameters('customScriptCommandToExecute'), reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress), parameters('ngSettings').licenseBlob]"
+          "commandToExecute": "[concat(parameters('customScriptCommandToExecute'), reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     }
