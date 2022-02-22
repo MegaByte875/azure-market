@@ -20,7 +20,7 @@
       "type": "object",
       "defaultValue": {
         "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9",
-        "tracking": "pid-AFF9EA5A-C011-4F6A-98DB-70046FDBF455"
+        "tracking": "pid-aff9ea5a-c011-4f6a-98db-70046fdbf455"
       },
       "metadata": {
         "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
@@ -590,7 +590,7 @@
   },
   "resources": [
     {
-      "name": "[parameters('nebulaTags').tracking]",
+      "name": "pid-aff9ea5a-c011-4f6a-98db-70046fdbf455-partnercenter",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-05-01",
       "properties": {
