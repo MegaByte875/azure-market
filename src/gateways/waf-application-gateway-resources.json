@@ -44,7 +44,46 @@
   },
   "variables": {
     "applicationGatewayName": "[concat(parameters('networkSettings').namespacePrefix, '-app-gateway')]",
-    "applicationGatewayIp": "[concat(parameters('networkSettings').namespacePrefix, '-app-gateway-ip')]"
+    "applicationGatewayIp": "[concat(parameters('networkSettings').namespacePrefix, '-app-gateway-ip')]",
+    "studioBpCfg": {
+      "Yes": {
+        "backendAddresses": [
+          {
+            "ipAddress": "[parameters('studioAddress')]"
+          }
+        ]
+      },
+      "No": {
+        "backendAddresses": []
+      }
+    },
+    "studioBp": "[variables('studioBpCfg')[if(empty(parameters('studioAddress')), 'No', 'Yes')]]",
+    "explorerBpCfg": {
+      "Yes": {
+        "backendAddresses": [
+          {
+            "ipAddress": "[parameters('explorerAddress')]"
+          }
+        ]
+      },
+      "No": {
+        "backendAddresses": []
+      }
+    },
+    "explorerBp": "[variables('explorerBpCfg')[if(empty(parameters('explorerAddress')), 'No', 'Yes')]]",
+    "dashboardBpCfg": {
+      "Yes": {
+        "backendAddresses": [
+          {
+            "ipAddress": "[parameters('dashboardAddress')]"
+          }
+        ]
+      },
+      "No": {
+        "backendAddresses": []
+      }
+    },
+    "dashboardBp": "[variables('dashboardBpCfg')[if(empty(parameters('dashboardAddress')), 'No', 'Yes')]]"
   },
   "resources": [
     {
@@ -107,33 +146,15 @@
         "backendAddressPools": [
           {
             "name": "ng-bp-studio",
-            "properties": {
-              "backendAddresses": [
-                {
-                  "ipAddress": "[parameters('studioAddress')]"
-                }
-              ]
-            }
+            "properties": "[variables('studioBp')]"
           },
           {
             "name": "ng-bp-explorer",
-            "properties": {
-              "backendAddresses": [
-                {
-                  "ipAddress": "[parameters('explorerAddress')]"
-                }
-              ]
-            }
+            "properties": "[variables('explorerBp')]"
           },
           {
             "name": "ng-bp-dashboard",
-            "properties": {
-              "backendAddresses": [
-                {
-                  "ipAddress": "[parameters('dashboardAddress')]"
-                }
-              ]
-            }
+            "properties": "[variables('dashboardBp')]"
           }
         ],
         "backendHttpSettingsCollection": [
