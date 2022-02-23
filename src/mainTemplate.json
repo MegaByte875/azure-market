@@ -508,15 +508,27 @@
       "No": "empty/empty-ip-resources.json",
       "Yes": "ips/ip-resources.json"
     },
-    "installGateway": "[if(and(equals('No', parameters('studio')), equals('No', parameters('explorer')), equals('No', parameters('dashboard'))), 'No', 'Yes')]",
+    "installGateway": "[if(or(equals('Yes', parameters('studio')), equals('Yes', parameters('explorer')), equals('Yes', parameters('dashboard'))), 'Yes', 'No')]",
     "gatewayIPTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('gatewayIpTemplates')[variables('installGateway')], parameters('_artifactsLocationSasToken')))]",
     "gatewayOptions": "[concat(toLower(split(parameters('appGatewayTier'), '_')[0]), '-application-gateway-resources')]",
     "gatewayTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('gateways/', variables('gatewayOptions'), '.json', parameters('_artifactsLocationSasToken')))]",
     "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
     "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
-    "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/studio-interface.json', parameters('_artifactsLocationSasToken')))]",
-    "explorerInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/explorer-interface.json', parameters('_artifactsLocationSasToken')))]",
-    "dashboardInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/dashboard-interface.json', parameters('_artifactsLocationSasToken')))]",
+    "studioInterfaceTemplates": {
+      "No": "empty/empty-studio-interface.json",
+      "Yes": "partials/studio-interface.json"
+    },
+    "studioInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('studioInterfaceTemplates')[parameters('studio')], parameters('_artifactsLocationSasToken')))]",
+    "explorerInterfaceTemplates": {
+      "No": "empty/empty-explorer-interface.json",
+      "Yes": "partials/explorer-interface.json"
+    },
+    "explorerInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('explorerInterfaceTemplates')[parameters('explorer')], parameters('_artifactsLocationSasToken')))]",
+    "dashboardInterfaceTemplates": {
+      "No": "empty/empty-dashboard-interface.json",
+      "Yes": "partials/dashboard-interface.json"
+    },
+    "dashboardInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('dashboardInterfaceTemplates')[parameters('dashboard')], parameters('_artifactsLocationSasToken')))]",
     "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]",
     "location": "[parameters('location')]",
     "ngSettings": {
