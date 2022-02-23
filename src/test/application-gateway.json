@@ -97,8 +97,7 @@
             "properties": {
               "Port": 80
             }
-          },
-          {}
+          }
         ],
         "backendAddressPools": [
           {
@@ -113,8 +112,7 @@
                 }
               ]
             }
-          },
-          {}
+          }
         ],
         "backendHttpSettingsCollection": [
           {
@@ -124,8 +122,7 @@
               "Protocol": "Http",
               "CookieBasedAffinity": "Disabled"
             }
-          },
-          {}
+          }
         ],
         "httpListeners": [
           {
@@ -139,8 +136,7 @@
               },
               "Protocol": "Http"
             }
-          },
-          {}
+          }
         ],
         "requestRoutingRules": [
           {
@@ -157,8 +153,7 @@
                 "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection',variables('applicationGatewayName'), 'appGatewayBackendHttpSettings')]"
               }
             }
-          },
-          {}
+          }
         ]
       }
     }
