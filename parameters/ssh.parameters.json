@@ -7,7 +7,7 @@
   "vmSizeStudio":{"value":"Standard_D2s_v3"},
   "explorer":{"value":"Yes"},
   "vmSizeExplorer":{"value":"Standard_D2s_v3"},
-  "dashboard":{"value":"Yes"},
+  "dashboard":{"value":"No"},
   "vmSizeDashboard":{"value":"Standard_D2s_v3"},
   "vmSizeGraphNodes":{"value":"Standard_D2as_v4"},
   "vmGraphNodeCount":{"value":1},
