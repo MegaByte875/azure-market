@@ -105,7 +105,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash nebula-install.sh ', ' -c metad ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version, ' -l ', parameters('ngSettings').licenseBlob]"
+            "commandToExecute": "[concat('bash nebula-install.sh ', ' -c metad ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version, ' -l ', parameters('ngSettings').licenseBlob)]"
           }
         },
         "storage": {
