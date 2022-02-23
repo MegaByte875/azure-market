@@ -31,7 +31,7 @@
       "metadata": {
         "description": "Dashboard node IP address"
       }
-    },    
+    },
     "nebulaTags": {
       "type": "object",
       "defaultValue": {
@@ -44,7 +44,44 @@
   },
   "variables": {
     "applicationGatewayName": "[concat(parameters('networkSettings').namespacePrefix, '-app-gateway')]",
-    "applicationGatewayIp": "[concat(parameters('networkSettings').namespacePrefix, '-app-gateway-ip')]"
+    "applicationGatewayIp": "[concat(parameters('networkSettings').namespacePrefix, '-app-gateway-ip')]",
+    "studioBpCfg": {
+      "Yes": {
+        "backendAddresses": [
+          {
+            "ipAddress": "[parameters('studioAddress')]"
+          }
+        ]
+      },
+      "No": {
+        "backendAddresses": []
+      }
+    },
+    "studioBp": "[variables('studioBpCfg')[if(empty(parameters('studioAddress')), 'No', 'Yes')]]",
+    "explorerBP": {
+      "Yes": {
+        "backendAddresses": [
+          {
+            "ipAddress": "[parameters('explorerAddress')]"
+          }
+        ]
+      },
+      "No": {
+        "backendAddresses": []
+      }
+    },
+    "dashboardBP": {
+      "Yes": {
+        "backendAddresses": [
+          {
+            "ipAddress": "[parameters('dashboardAddress')]"
+          }
+        ]
+      },
+      "No": {
+        "backendAddresses": []
+      }
+    }
   },
   "resources": [
     {
