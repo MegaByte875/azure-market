@@ -60,8 +60,60 @@ FLAG_DATA_PATH="--data_path"
 
 DISK_DATA_PATH="/usr/local/nebula/data"
 
-NEBULA_UNITS_PATH="./units"
 SYSTEMD_PATH="/usr/lib/systemd/system"
+
+#Define systemctl units
+
+GRAPHD_SERVICE="[Unit]
+                Description=Nebula Graph Graphd Service
+                After=network.target
+
+                [Service]
+                Type=forking
+                Restart=always
+                RestartSec=10s
+                PIDFile=/usr/local/nebula/pids/nebula-graphd.pid
+                ExecStart=/usr/local/nebula/scripts/nebula.service start graphd
+                ExecReload=/usr/local/nebula/scripts/nebula.service restart graphd
+                ExecStop=/usr/local/nebula/scripts/nebula.service stop graphd
+                PrivateTmp=true
+
+                [Install]
+                WantedBy=multi-user.target"
+
+METAD_SERVICE="[Unit]
+               Description=Nebula Graph Metad Service
+               After=network.target
+
+               [Service]
+               Type=forking
+               Restart=always
+               RestartSec=10s
+               PIDFile=/usr/local/nebula/pids/nebula-metad.pid
+               ExecStart=/usr/local/nebula/scripts/nebula.service start metad
+               ExecReload=/usr/local/nebula/scripts/nebula.service restart metad
+               ExecStop=/usr/local/nebula/scripts/nebula.service stop metad
+               PrivateTmp=true
+
+               [Install]
+               WantedBy=multi-user.target"
+
+STORAGED_SERVICE="[Unit]
+                  Description=Nebula Graph Storaged Service
+                  After=network.target
+
+                  [Service]
+                  Type=forking
+                  Restart=always
+                  RestartSec=10s
+                  PIDFile=/usr/local/nebula/pids/nebula-storaged.pid
+                  ExecStart=/usr/local/nebula/scripts/nebula.service start storaged
+                  ExecReload=/usr/local/nebula/scripts/nebula.service restart storaged
+                  ExecStop=/usr/local/nebula/scripts/nebula.service stop storaged
+                  PrivateTmp=true
+
+                  [Install]
+                  WantedBy=multi-user.target"
 
 #Loop through options passed
 while getopts :v:c:i:m:l:h optname; do
@@ -251,8 +303,7 @@ register_graph_systemd()
   log "[register_graph_systemd] register nebula-graphd service"
   local UNIT_NAME="nebula-graphd.service"
 
-  cp "${NEBULA_UNITS_PATH}/${UNIT_NAME}" "${SYSTEMD_PATH}/${UNIT_NAME}"
-
+  echo "${GRAPHD_SERVICE}" > ${SYSTEMD_PATH}/${UNIT_NAME}
   systemctl daemon-reload
   systemctl enable ${UNIT_NAME}
 }
@@ -262,7 +313,7 @@ register_storage_systemd()
   log "[register_storage_systemd] register nebula-storaged service"
   local UNIT_NAME="nebula-storaged.service"
 
-  cp "${NEBULA_UNITS_PATH}/${UNIT_NAME}" "${SYSTEMD_PATH}/${UNIT_NAME}"
+  echo "${STORAGED_SERVICE}" > ${SYSTEMD_PATH}/${UNIT_NAME}
   systemctl daemon-reload
   systemctl enable ${UNIT_NAME}
 }
@@ -272,7 +323,7 @@ register_meta_systemd()
   log "[register_meta_systemd] register nebula-metad service"
   local UNIT_NAME="nebula-metad.service"
 
-  cp "${NEBULA_UNITS_PATH}/${UNIT_NAME}" "${SYSTEMD_PATH}/${UNIT_NAME}"
+  echo "${METAD_SERVICE}" > ${SYSTEMD_PATH}/${UNIT_NAME}
   systemctl daemon-reload
   systemctl enable ${UNIT_NAME}
 }
