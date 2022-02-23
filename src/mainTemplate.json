@@ -28,10 +28,10 @@
     },
     "ngVersion": {
       "type": "string",
-      "defaultValue": "v2.6.2",
+      "defaultValue": "2.6.2",
       "allowedValues": [
-        "v2.6.2",
-        "v3.0.0"
+        "2.6.2",
+        "3.0.0"
       ],
       "metadata": {
         "description": "NebulaGraph version to install"
@@ -42,6 +42,13 @@
       "defaultValue": "nebula",
       "metadata": {
         "description": "The name of the NebulaGraph cluster"
+      }
+    },
+    "ngLicenseBlob": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The NebulaGraph ent license address"
       }
     },
     "studio": {
@@ -515,6 +522,7 @@
     "ngSettings": {
       "clusterName": "[parameters('ngClusterName')]",
       "version": "[parameters('ngVersion')]",
+      "licenseBlob": "[parameters('ngLicenseBlob')]",
       "securityAdminPwd": "[parameters('securityAdminPassword')]",
       "securityDashboardPwd": "[parameters('securityDashboardPassword')]"
     },

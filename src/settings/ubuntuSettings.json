@@ -66,6 +66,7 @@
     "ubuntuScripts": [
       "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/dashboard-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/init_dashboard.sql', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/studio-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/explorer-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]",
@@ -104,7 +105,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash nebula-install.sh ', ' -c metad ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version)]"
+            "commandToExecute": "[concat('bash nebula-install.sh ', ' -c metad ', ' -m ', parameters('metaAddress'), ' -v ', parameters('ngSettings').version, ' -l ', parameters('ngSettings').licenseBlob]"
           }
         },
         "storage": {
@@ -140,7 +141,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash explorer-install.sh ')]"
+            "commandToExecute": "[concat('bash explorer-install.sh ', ' -l ', parameters('ngSettings').licenseBlob)]"
           }
         },
         "dashboard": {
@@ -152,7 +153,7 @@
             "fileUris": "[variables('ubuntuScripts')]"
           },
           "protectedSettings": {
-            "commandToExecute": "[concat('bash dashboard-install.sh ')]"
+            "commandToExecute": "[concat('bash dashboard-install.sh ', ' -l ', parameters('ngSettings').licenseBlob)]"
           }
         }
       }
