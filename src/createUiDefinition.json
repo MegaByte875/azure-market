@@ -803,7 +803,7 @@
       "adminPassword": "[basics('password').password]",
       "sshPublicKey": "[basics('password').sshPublicKey]",
       "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
-      "securityDashboardPassword": "[steps('securityStep').dashboard_admin.securityDashboardPassword]",
+      "securityDashboardPassword": "[steps('securityStep').ng_dashboard.securityDashboardPassword]",
       "appGatewayTier": "Standard_v2",
       "appGatewaySku": "Standard_v2",
       "appGatewayCertBlob": "",
