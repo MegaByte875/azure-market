@@ -54,17 +54,17 @@
             "name": "ngVersion",
             "type": "Microsoft.Common.DropDown",
             "label": "NebulaGraph version",
-            "defaultValue": "v2.6.2",
+            "defaultValue": "2.6.2",
             "toolTip": "Choose a version of NebulaGraph.",
             "constraints": {
               "allowedValues": [
                 {
-                  "label": "v2.6.2",
-                  "value": "v2.6.2"
+                  "label": "2.6.2",
+                  "value": "2.6.2"
                 },
                 {
-                  "label": "v3.0.0",
-                  "value": "v3.0.0"
+                  "label": "3.0.0",
+                  "value": "3.0.0"
                 }
               ]
             }

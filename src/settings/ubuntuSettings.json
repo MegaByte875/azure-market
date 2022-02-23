@@ -70,10 +70,7 @@
       "[uri(parameters('_artifactsLocation'), concat('scripts/studio-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/explorer-install.sh', parameters('_artifactsLocationSasToken')))]",
       "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils.sh', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-download', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-graphd.service', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-metad.service', parameters('_artifactsLocationSasToken')))]",
-      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-storaged.service', parameters('_artifactsLocationSasToken')))]"
+      "[uri(parameters('_artifactsLocation'), concat('scripts/nebula-download', parameters('_artifactsLocationSasToken')))]"
     ],
     "ubuntuSettings": {
       "imageReference": {
