@@ -19,3 +19,6 @@ vendor
 *.swo
 *~
 *.log
+
+#license
+nebula.license
