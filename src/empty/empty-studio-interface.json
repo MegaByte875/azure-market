@@ -37,7 +37,7 @@
   "outputs": {
     "studioAddress": {
       "type": "string",
-      "value": "N/A"
+      "value": ""
     }
   }
 }
