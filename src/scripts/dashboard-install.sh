@@ -100,7 +100,7 @@ install_dashboard()
 install_mysql()
 {
   log "[install_mysql] installing mysql"
-  apt -y install mysql-server
+  apt-get -yq install mysql-server
 
   systemctl -q is-active mysql
   EXIT_CODE=$?
@@ -156,9 +156,9 @@ start_dashboard()
 #  exit 0
 #fi
 
-log "updating apt"
-apt -y update
-log "updated apt"
+log "updating apt-get"
+apt-get -yq update
+log "updated apt-get"
 
 if ! systemctl -q is-active mysql; then
   install_mysql
