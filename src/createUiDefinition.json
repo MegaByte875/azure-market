@@ -780,7 +780,7 @@
       "vNetNewAddressPrefix": "[first(steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.addressPrefixes)]",
       "vNetNewClusterSubnetAddressPrefix": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.addressPrefix]",
       "vNetAppGatewaySubnetName": "ng-gateway-subnet",
-      "vNetNewAppGatewaySubnetAddressPrefix": "",
+      "vNetNewAppGatewaySubnetAddressPrefix": "10.0.0.128/28",
       "studio": "[steps('externalAccessStep').studioSection.studio]",
       "vmSizeStudio": "[steps('externalAccessStep').studioSection.vmSizeStudio]",
       "explorer": "[steps('externalAccessStep').explorerSection.explorer]",
