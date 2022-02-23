@@ -60,7 +60,7 @@ FLAG_DATA_PATH="--data_path"
 
 DISK_DATA_PATH="/usr/local/nebula/data"
 
-NEBULA_UNITS_PATH="../units"
+NEBULA_UNITS_PATH="./units"
 SYSTEMD_PATH="/usr/lib/systemd/system"
 
 #Loop through options passed

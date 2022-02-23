@@ -107,6 +107,8 @@ if systemctl -q is-active nebula-graph-studio.service; then
   exit 0
 fi
 
+mkdir -p "/usr/lib/systemd/system"
+
 install_studio
 
 configure_systemd
