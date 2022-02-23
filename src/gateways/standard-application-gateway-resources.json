@@ -58,7 +58,7 @@
       }
     },
     "studioBp": "[variables('studioBpCfg')[if(empty(parameters('studioAddress')), 'No', 'Yes')]]",
-    "explorerBP": {
+    "explorerBpCfg": {
       "Yes": {
         "backendAddresses": [
           {
@@ -70,7 +70,8 @@
         "backendAddresses": []
       }
     },
-    "dashboardBP": {
+    "explorerBp": "[variables('explorerBpCfg')[if(empty(parameters('explorerAddress')), 'No', 'Yes')]]",
+    "dashboardBpCfg": {
       "Yes": {
         "backendAddresses": [
           {
@@ -81,7 +82,8 @@
       "No": {
         "backendAddresses": []
       }
-    }
+    },
+    "dashboardBp": "[variables('dashboardBpCfg')[if(empty(parameters('dashboardAddress')), 'No', 'Yes')]]"
   },
   "resources": [
     {
@@ -144,33 +146,15 @@
         "backendAddressPools": [
           {
             "name": "ng-bp-studio",
-            "properties": {
-              "backendAddresses": [
-                {
-                  "ipAddress": "[parameters('studioAddress')]"
-                }
-              ]
-            }
+            "properties": "[variables('studioBp')]"
           },
           {
             "name": "ng-bp-explorer",
-            "properties": {
-              "backendAddresses": [
-                {
-                  "ipAddress": "[parameters('explorerAddress')]"
-                }
-              ]
-            }
+            "properties": "[variables('explorerBp')]"
           },
           {
             "name": "ng-bp-dashboard",
-            "properties": {
-              "backendAddresses": [
-                {
-                  "ipAddress": "[parameters('dashboardAddress')]"
-                }
-              ]
-            }
+            "properties": "[variables('dashboardBp')]"
           }
         ],
         "backendHttpSettingsCollection": [
