@@ -130,6 +130,7 @@ while getopts :v:c:m:l:h optname; do
     ;;
   l) #set nebula license
     NEBULA_LICENSE="${OPTARG}"
+    log  "debug: ${NEBULA_LICENSE}"
     ;;
   h) #show help
     help
