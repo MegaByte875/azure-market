@@ -111,14 +111,16 @@
                 },
                 "toolTip": {
                   "virtualNetwork": "Create a new Virtual Network or use an existing one",
-                  "subnets": "Choose the Subnet for NebulaGraph nodes. If choosing an existing Virtual Network, the Subnets to use will need to exist beforehand; Creating a new subnet in an existing Virtual Network is not supported"
+                  "subnets": "Choose the Subnet for NebulaGraph nodes and application gateway. If choosing an existing Virtual Network, the Subnets to use will need to exist beforehand; Creating a new subnet in an existing Virtual Network is not supported"
                 },
                 "defaultValue": {
                   "name": "ng-net",
                   "addressPrefixSize": "/24"
                 },
                 "constraints": {
-                  "minAddressPrefixSize": "/24"
+                  "minAddressPrefixSize": "/24",
+                  "minAddressCount": 20,
+                  "requireContiguousAddresses": true
                 },
                 "options": {
                   "hideExisting": false
@@ -132,6 +134,18 @@
                     },
                     "constraints": {
                       "minAddressPrefixSize": "/25",
+                      "minAddressCount": 10,
+                      "requireContiguousAddresses": true
+                    }
+                  },
+                  "subnet2": {
+                    "label": "NebulaGraph gateway subnet",
+                    "defaultValue": {
+                      "name": "ng-gateway-subnet",
+                      "addressPrefixSize": "/28"
+                    },
+                    "constraints": {
+                      "minAddressPrefixSize": "/28",
                       "minAddressCount": 3,
                       "requireContiguousAddresses": true
                     }
@@ -779,8 +793,8 @@
       "vNetExistingResourceGroup": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.resourceGroup]",
       "vNetNewAddressPrefix": "[first(steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.addressPrefixes)]",
       "vNetNewClusterSubnetAddressPrefix": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet1.addressPrefix]",
-      "vNetAppGatewaySubnetName": "ng-gateway-subnet",
-      "vNetNewAppGatewaySubnetAddressPrefix": "10.0.0.128/28",
+      "vNetAppGatewaySubnetName": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet2.name]",
+      "vNetNewAppGatewaySubnetAddressPrefix": "[steps('clusterSettingsStep').virtualNetworkConfiguration.virtualNetwork.subnets.subnet2.addressPrefix]",
       "studio": "[steps('externalAccessStep').studioSection.studio]",
       "vmSizeStudio": "[steps('externalAccessStep').studioSection.vmSizeStudio]",
       "explorer": "[steps('externalAccessStep').explorerSection.explorer]",
