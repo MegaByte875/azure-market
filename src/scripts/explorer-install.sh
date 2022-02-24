@@ -100,7 +100,7 @@ configure_license()
 {
   if [[ -n "${NEBULA_LICENSE}" ]]; then
     log "[configure_license] save Nebula License to file"
-    echo "${NEBULA_LICENSE}" > $NEBULA_LICENSE_PATH
+    echo ${NEBULA_LICENSE} > $NEBULA_LICENSE_PATH
   fi
 }
 
