@@ -5,6 +5,7 @@
 #########################
 
 export DEBIAN_FRONTEND=noninteractive
+echo "$@"
 
 help()
 {
@@ -129,6 +130,7 @@ while getopts :v:c:m:l:h optname; do
     ;;
   l) #set nebula license
     NEBULA_LICENSE="${OPTARG}"
+    echo "$NEBULA_LICENSE"
     ;;
   h) #show help
     help
@@ -269,7 +271,7 @@ configure_license()
 {
   if [[ -n "${NEBULA_LICENSE}" ]]; then
     log "[configure_license] save Nebula License to file"
-      echo ${NEBULA_LICENSE} | base64 -d | tee $NEBULA_LICENSE_PATH
+    echo ${NEBULA_LICENSE} | base64 -d | tee $NEBULA_LICENSE_PATH
   fi
 }
 
