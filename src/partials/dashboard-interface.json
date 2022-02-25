@@ -47,10 +47,7 @@
         "name": "Standard"
       },
       "properties": {
-        "publicIPAllocationMethod": "Static",
-        "dnsSettings": {
-          "domainNameLabel": "[concat('dashboard-', uniqueString(resourceGroup().id, deployment().name))]"
-        }
+        "publicIPAllocationMethod": "Static"
       },
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
