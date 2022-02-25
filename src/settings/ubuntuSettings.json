@@ -54,7 +54,7 @@
     "nebulaTags": {
       "type": "object",
       "defaultValue": {
-        "provider": "648D2193-0CE0-4EFB-8A82-AF9792184FD9"
+        "provider": "D907532C-FE04-4683-B102-3DB0A038C2A7"
       },
       "metadata": {
         "description": "Unique identifiers to allow the Azure Infrastructure to understand the origin of resources deployed to Azure. You do not need to supply a value for this."
@@ -184,6 +184,9 @@
           "topologySettings": {
             "value": "[parameters('topologySettings')]"
           },
+          "networkSettings": {
+            "value": "[parameters('networkSettings')]"
+          },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }
@@ -191,5 +194,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "jumpboxssh": {
+      "value": "[reference('nebula-nodes').outputs.jumpboxssh.value]",
+      "type": "string"
+    }
+  }
 }

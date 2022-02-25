@@ -111,7 +111,7 @@
                 },
                 "toolTip": {
                   "virtualNetwork": "Create a new Virtual Network or use an existing one",
-                  "subnets": "Choose the Subnet for NebulaGraph nodes and application gateway. If choosing an existing Virtual Network, the Subnets to use will need to exist beforehand; Creating a new subnet in an existing Virtual Network is not supported"
+                  "subnets": "Choose the Subnet for NebulaGraph nodes and application gateway. If choosing an existing Virtual Network, the Subnets to use will need to exist beforehand; Creating a new subnet in an existing Virtual Network is not supported；gateway subnet and nodes subnet need in the same network"
                 },
                 "defaultValue": {
                   "name": "ng-net",
@@ -269,6 +269,55 @@
             ]
           },
           {
+            "name": "graphNodesDisks",
+            "type": "Microsoft.Common.Section",
+            "label": "Graph node disks",
+            "elements": [
+              {
+                "name": "vmGraphDiskSize",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Size of each managed disk",
+                "defaultValue": "2GiB",
+                "toolTip": "The size of each data disk to attach to each graph node, it is used for storing log",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "2GiB",
+                      "value": "2GiB"
+                    },
+                    {
+                      "label": "4GiB",
+                      "value": "4GiB"
+                    },
+                    {
+                      "label": "8GiB",
+                      "value": "8GiB"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "storageAccountType",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Type of managed disks",
+                "defaultValue": "Premium disks",
+                "toolTip": "The storage type of managed disks. The default will be Premium disks for VMs that support Premium disks and Standard disks for those that do not.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Standard disks",
+                      "value": "Standard"
+                    },
+                    {
+                      "label": "Premium disks",
+                      "value": "Premium"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
             "name": "metaNodes",
             "type": "Microsoft.Common.Section",
             "label": "Meta nodes",
@@ -317,6 +366,51 @@
                 },
                 "osPlatform": "Linux",
                 "count": "[steps('nodesStep').metaNodes.vmMetaNodeCount]"
+              }
+            ]
+          },
+          {
+            "name": "metaNodesDisks",
+            "type": "Microsoft.Common.Section",
+            "label": "Meta node disks",
+            "elements": [
+              {
+                "name": "vmMetaDiskSize",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Size of each managed disk",
+                "defaultValue": "8GiB",
+                "toolTip": "The size of each data disk to attach to each meta , it is used for storing log and data",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "8GiB",
+                      "value": "8GiB"
+                    },
+                    {
+                      "label": "16GiB",
+                      "value": "16GiB"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "storageAccountType",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Type of managed disks",
+                "defaultValue": "Premium disks",
+                "toolTip": "The storage type of managed disks. The default will be Premium disks for VMs that support Premium disks and Standard disks for those that do not.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Standard disks",
+                      "value": "Standard"
+                    },
+                    {
+                      "label": "Premium disks",
+                      "value": "Premium"
+                    }
+                  ]
+                }
               }
             ]
           },
@@ -434,8 +528,8 @@
                 "name": "vmStorageDiskSize",
                 "type": "Microsoft.Common.DropDown",
                 "label": "Size of each managed disk",
-                "defaultValue": "128GiB",
-                "toolTip": "The size of each data disk to attach to each storage node",
+                "defaultValue": "16GiB",
+                "toolTip": "The size of each data disk to attach to each storage node, it is used for storing log and data",
                 "constraints": {
                   "allowedValues": [
                     {
@@ -701,10 +795,29 @@
             "label": "External Access",
             "elements": [
               {
+                "name": "jumpbox",
+                "type": "Microsoft.Common.OptionsGroup",
+                "label": "Use a jump box?",
+                "defaultValue": "No",
+                "toolTip": "A jump box allows you to connect to your cluster from a public access point like SSH. This is usually not necessary if Dashboard is installed, since Dashboard itself acts as a jump box.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Yes",
+                      "value": "Yes"
+                    },
+                    {
+                      "label": "No",
+                      "value": "No"
+                    }
+                  ]
+                }
+              },
+              {
                 "name": "appGatewayTier",
                 "type": "Microsoft.Common.DropDown",
                 "label": "Application gateway tier",
-                "defaultValue": "Standard",
+                "defaultValue": "Standard V2",
                 "toolTip": "Choose application gateway SKU, Standard V2 or WAF V2.",
                 "constraints": {
                   "allowedValues": [
@@ -770,7 +883,7 @@
                 },
                 "toolTip": "Password for the built-in 'dashboard_admin' user. This is a built-in account that access Dashboard.",
                 "constraints": {
-                  "required": true,
+                  "required": false,
                   "regex": "^.{12,}",
                   "validationMessage": "Password must be at least 12 characters long"
                 },
@@ -801,25 +914,27 @@
       "vmSizeExplorer": "[steps('externalAccessStep').explorerSection.vmSizeExplorer]",
       "dashboard": "[steps('externalAccessStep').dashboardSection.dashboard]",
       "vmSizeDashboard": "[steps('externalAccessStep').dashboardSection.vmSizeDashboard]",
+      "jumpbox": "[steps('externalAccessStep').externalAccessSection.jumpbox]",
       "vmHostNamePrefix": "[steps('nodesStep').namePrefix]",
       "vmSizeGraphNodes": "[steps('nodesStep').graphNodes.vmSizeGraphNodes]",
       "vmGraphNodeCount": "[steps('nodesStep').graphNodes.vmGraphNodeCount]",
-      "vmGraphDiskSize": "10GiB",
+      "vmGraphDiskSize": "[steps('nodesStep').graphNodesDisks.vmGraphDiskSize]",
+      "vmGraphDiskType": "[steps('nodesStep').graphNodesDisks.storageAccountType]",
       "vmSizeMetaNodes": "[steps('nodesStep').metaNodes.vmSizeMetaNodes]",
       "vmMetaNodeCount": "[steps('nodesStep').metaNodes.vmMetaNodeCount]",
-      "vmMetaDiskSize": "20GiB",
+      "vmMetaDiskSize": "[steps('nodesStep').metaNodesDisks.vmMetaDiskSize]",
+      "vmMetaDiskType": "[steps('nodesStep').metaNodesDisks.storageAccountType]",
       "vmSizeStorageNodes": "[steps('nodesStep').storageNodes.vmSizeStorageNodes]",
       "vmStorageNodeCount": "[steps('nodesStep').storageNodes.vmStorageNodeCount]",
       "vmStorageDiskSize": "[steps('nodesStep').storageNodesDisks.vmStorageDiskSize]",
-      "storageAccountType": "[steps('nodesStep').storageNodesDisks.storageAccountType]",
+      "vmStorageDiskType": "[steps('nodesStep').storageNodesDisks.storageAccountType]",
       "adminUsername": "[basics('adminUsername')]",
       "authenticationType": "[basics('password').authenticationType]",
       "adminPassword": "[basics('password').password]",
       "sshPublicKey": "[basics('password').sshPublicKey]",
       "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
       "securityDashboardPassword": "[steps('securityStep').ng_dashboard.securityDashboardPassword]",
-      "appGatewayTier": "Standard_v2",
-      "appGatewaySku": "Standard_v2",
+      "appGatewayTier": "[steps('externalAccessStep').externalAccessSection.appGatewayTier]",
       "appGatewayCertBlob": "",
       "appGatewayCertPassword": "",
       "appGatewayWafStatus": "Disabled",

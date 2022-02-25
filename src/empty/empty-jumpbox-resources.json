@@ -10,14 +10,24 @@
     },
     "namespace": {
       "type": "string",
-      "metadata": {
-        "description": "The unique namespace for the Explorer VM"
-      }
+      "defaultValue": ""
     },
     "networkSettings": {
       "type": "object",
       "metadata": {
         "description": "Network settings"
+      }
+    },
+    "credentials": {
+      "type": "secureObject",
+      "metadata": {
+        "description": "Credential information block"
+      }
+    },
+    "osSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "NebulaGraph deployment platform settings"
       }
     },
     "nebulaTags": {
@@ -30,14 +40,12 @@
       }
     }
   },
-  "variables": {
-  },
-  "resources": [
-  ],
+  "variables": {},
+  "resources": [],
   "outputs": {
-    "explorerAddress": {
-      "type": "string",
-      "value": ""
+    "ssh": {
+      "value": "N/A",
+      "type": "string"
     }
   }
 }

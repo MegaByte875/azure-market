@@ -33,6 +33,12 @@
         "description": "Aggregate for topology variable"
       }
     },
+    "networkSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Network settings"
+      }
+    },
     "nebulaTags": {
       "type": "object",
       "defaultValue": {
@@ -44,6 +50,11 @@
     }
   },
   "variables": {
+    "jumpboxTemplates": {
+      "No": "empty/empty-jumpbox-resources.json",
+      "Yes": "machines/jumpbox-resources.json"
+    },
+    "jumpboxTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('jumpboxTemplates')[parameters('topologySettings').jumpbox], parameters('_artifactsLocationSasToken')))]",
     "dashboardTemplates": {
       "No": "empty/empty-dashboard-resources.json",
       "Yes": "machines/dashboard-resources.json"
@@ -304,7 +315,45 @@
           }
         }
       }
+    },
+    {
+      "name": "jumpbox",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-05-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('jumpboxTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[parameters('commonVmSettings').location]"
+          },
+          "namespace": {
+            "value": "[concat(parameters('commonVmSettings').namespacePrefix, 'jumpbox')]"
+          },
+          "networkSettings": {
+            "value": "[parameters('networkSettings')]"
+          },
+          "credentials": {
+            "value": "[parameters('commonVmSettings').credentials]"
+          },
+          "osSettings": {
+            "value": "[parameters('osSettings')]"
+          },
+          "nebulaTags": {
+            "value": "[parameters('nebulaTags')]"
+          }
+        }
+      }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "jumpboxssh": {
+      "value": "[reference('jumpbox').outputs.ssh.value]",
+      "type": "string"
+    }
+  }
 }

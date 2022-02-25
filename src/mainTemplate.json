@@ -428,6 +428,17 @@
         "description": "The address space of the subnet. Required when creating a new Virtual Network"
       }
     },
+    "jumpbox": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Optionally add a virtual machine to the deployment which can be used to connect and manage virtual machines within the cluster. Not required if installing Dashboard, as Dashboard can be used as a jumpbox"
+      }
+    },
     "vNetAppGatewaySubnetName": {
       "type": "string",
       "defaultValue": "ng-gateway-subnet",
@@ -451,17 +462,6 @@
       ],
       "metadata": {
         "description": "The tier of the Application Gateway. Required when selecting Application Gateway for load balancing"
-      }
-    },
-    "appGatewaySku": {
-      "type": "string",
-      "defaultValue": "Standard_v2",
-      "allowedValues": [
-        "Standard_v2",
-        "WAF_v2"
-      ],
-      "metadata": {
-        "description": "The size of the Application Gateway"
       }
     },
     "appGatewayCertBlob": {
@@ -556,7 +556,8 @@
       "explorer": "[parameters('explorer')]",
       "vmSizeDashboard": "[parameters('vmSizeDashboard')]",
       "dashboard": "[parameters('dashboard')]",
-      "vmHostNamePrefix": "[parameters('vmHostNamePrefix')]"
+      "vmHostNamePrefix": "[parameters('vmHostNamePrefix')]",
+      "jumpbox": "[parameters('jumpbox')]"
     },
     "networkSettings": {
       "name": "[parameters('vNetName')]",
@@ -601,7 +602,7 @@
       "managementPort": 22
     },
     "applicationGatewaySettings": {
-      "skuName": "[parameters('appGatewaySku')]",
+      "skuName": "[parameters('appGatewayTier')]",
       "tier": "[parameters('appGatewayTier')]",
       "minCapacity": 2,
       "maxCapacity": 10,
@@ -891,8 +892,7 @@
       "apiVersion": "2019-05-01",
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'shared')]",
-        "[resourceId('Microsoft.Resources/deployments', 'metaNICs')]",
-        "[resourceId('Microsoft.Resources/deployments', 'gateway')]"
+        "[resourceId('Microsoft.Resources/deployments', 'metaNICs')]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -939,6 +939,10 @@
   "outputs": {
     "gateway": {
       "value": "[reference('gatewayIP').outputs.fqdn.value]",
+      "type": "string"
+    },
+    "jumpboxssh": {
+      "value": "[reference('virtualMachines').outputs.jumpboxssh.value]",
       "type": "string"
     }
   }
