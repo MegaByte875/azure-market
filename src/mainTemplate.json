@@ -223,7 +223,7 @@
     },
     "vmGraphDiskSize": {
       "type": "string",
-      "defaultValue": "10GiB",
+      "defaultValue": "2GiB",
       "metadata": {
         "description": "The disk size of each attached managed disk."
       }
@@ -259,7 +259,7 @@
     },
     "vmMetaDiskSize": {
       "type": "string",
-      "defaultValue": "20GiB",
+      "defaultValue": "8GiB",
       "metadata": {
         "description": "The disk size of each attached managed disk."
       }
@@ -297,7 +297,7 @@
     },
     "vmStorageDiskSize": {
       "type": "string",
-      "defaultValue": "32GiB",
+      "defaultValue": "16GiB",
       "allowedValues": [
         "16GiB",
         "32GiB",
