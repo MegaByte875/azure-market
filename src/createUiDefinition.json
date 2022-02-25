@@ -92,7 +92,7 @@
             },
             "options": {
               "multiple": false,
-              "openMode": "text",
+              "openMode": "binary",
               "uploadMode": "file",
               "encoding": "UTF-8"
             }
