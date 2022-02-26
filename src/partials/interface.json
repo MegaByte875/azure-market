@@ -45,34 +45,12 @@
   "resources": [
     {
       "apiVersion": "2019-04-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('namespace'), copyIndex(), '-ip')]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Standard"
-      },
-      "tags": {
-        "provider": "[toUpper(parameters('nebulaTags').provider)]"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static"
-      },
-      "copy": {
-        "name": "publicIpCopy",
-        "count": "[parameters('count')]"
-      }
-    },
-    {
-      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('namespace'), copyIndex(), '-nic')]",
       "location": "[parameters('location')]",
       "tags": {
         "provider": "[toUpper(parameters('nebulaTags').provider)]"
       },
-      "dependsOn": [
-        "[concat(parameters('namespace'), copyIndex(), '-ip')]"
-      ],
       "properties": {
         "primary": true,
         "ipConfigurations": [
@@ -80,9 +58,6 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('namespace'), copyIndex(), '-ip'))]"
-              },
               "subnet": {
                 "id": "[parameters('subnetId')]"
               }

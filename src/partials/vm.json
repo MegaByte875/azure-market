@@ -2,19 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "_artifactsLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "Base uri of resources"
-      }
-    },
-    "_artifactsLocationSasToken": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
-      },
-      "defaultValue": ""
-    },
     "vm": {
       "type": "object",
       "metadata": {
@@ -31,6 +18,15 @@
       "type": "string",
       "metadata": {
         "description": "The name of the availability set"
+      }
+    },
+    "dataDisks": {
+      "type": "object",
+      "defaultValue": {
+        "disks": []
+      },
+      "metadata": {
+        "description": "additional data disks to attach"
       }
     },
     "nebulaTags": {
@@ -96,7 +92,8 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": "[parameters('dataDisks')]"
         },
         "networkProfile": {
           "networkInterfaces": [

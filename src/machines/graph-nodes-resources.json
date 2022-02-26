@@ -21,6 +21,12 @@
         "description": "vm configuration"
       }
     },
+    "storageSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Storage Account Settings"
+      }
+    },
     "nebulaTags": {
       "type": "object",
       "defaultValue": {
@@ -100,12 +106,6 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "_artifactsLocation": {
-            "value": "[parameters('_artifactsLocation')]"
-          },
-          "_artifactsLocationSasToken": {
-            "value": "[parameters('_artifactsLocationSasToken')]"
-          },
           "vm": {
             "value": "[parameters('vm')]"
           },
@@ -114,6 +114,18 @@
           },
           "availabilitySet": {
             "value": "[concat(variables('namespace'), 'av-set')]"
+          },
+          "dataDisks": {
+            "value": {
+              "name": "[concat(variables('namespace'), copyIndex(), '-datadisk')]",
+              "diskSizeGB": "[parameters('storageSettings').diskSize]",
+              "lun": 0,
+              "managedDisk": {
+                "storageAccountType": "[parameters('storageSettings').accountType]"
+              },
+              "caching": "ReadOnly",
+              "createOption": "Empty"
+            }
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"

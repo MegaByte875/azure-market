@@ -136,6 +136,9 @@
               "platformFaultDomainCount": "[variables('platformFaultDomainCount')]"
             }
           },
+          "storageSettings": {
+            "value": "[parameters('topologySettings').graphNodeStorageSettings]"
+          },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }
@@ -172,6 +175,9 @@
               "platformFaultDomainCount": "[variables('platformFaultDomainCount')]"
             }
           },
+          "storageSettings": {
+            "value": "[parameters('topologySettings').metaNodeStorageSettings]"
+          },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
           }
@@ -207,6 +213,9 @@
               "imageReference": "[parameters('osSettings').imageReference]",
               "platformFaultDomainCount": "[variables('platformFaultDomainCount')]"
             }
+          },
+          "storageSettings": {
+            "value": "[parameters('topologySettings').storageNodeStorageSettings]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"

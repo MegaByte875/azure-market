@@ -228,6 +228,17 @@
         "description": "The disk size of each attached managed disk."
       }
     },
+    "vmGraphDiskType": {
+      "type": "string",
+      "defaultValue": "Premium",
+      "allowedValues": [
+        "Premium",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "The storage account type of the attached managed disks and OS disks (Premium or Standard)."
+      }
+    },
     "vmSizeMetaNodes": {
       "type": "string",
       "defaultValue": "Standard_D2as_v4",
@@ -262,6 +273,17 @@
       "defaultValue": "8GiB",
       "metadata": {
         "description": "The disk size of each attached managed disk."
+      }
+    },
+    "vmMetaDiskType": {
+      "type": "string",
+      "defaultValue": "Premium",
+      "allowedValues": [
+        "Premium",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "The storage account type of the attached managed disks and OS disks (Premium or Standard)."
       }
     },
     "vmSizeStorageNodes": {
@@ -313,23 +335,23 @@
         "description": "The disk size of each attached managed disk, Default is 32GiB."
       }
     },
+    "vmStorageDiskType": {
+      "type": "string",
+      "defaultValue": "Premium",
+      "allowedValues": [
+        "Premium",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "The storage account type of the attached managed disks and OS disks (Premium or Standard)."
+      }
+    },
     "vmHostNamePrefix": {
       "type": "string",
       "defaultValue": "ng",
       "maxLength": 10,
       "metadata": {
         "description": "The prefix to use for resources and hostnames when naming virtual machines in the cluster."
-      }
-    },
-    "storageAccountType": {
-      "type": "string",
-      "defaultValue": "Default",
-      "allowedValues": [
-        "Premium",
-        "Standard"
-      ],
-      "metadata": {
-        "description": "The storage account type of the attached managed disks and OS disks (Default or Standard). The Default storage account type will be Premium Storage for VMs that support Premium Storage and Standard HDD Storage for those that do not."
       }
     },
     "adminUsername": {
@@ -548,8 +570,7 @@
       "vmMetaNodeCount": "[parameters('vmMetaNodeCount')]",
       "vmSizeMetaNodes": "[parameters('vmSizeMetaNodes')]",
       "vmStorageNodeCount": "[parameters('vmStorageNodeCount')]",
-      "vmSizeStorageNodes": "[parameters('vmSizeMetaNodes')]",
-      "vmNodeStorageAccountType": "[parameters('storageAccountType')]",
+      "vmSizeStorageNodes": "[parameters('vmSizeStorageNodes')]",
       "vmSizeStudio": "[parameters('vmSizeStudio')]",
       "studio": "[parameters('studio')]",
       "vmSizeExplorer": "[parameters('vmSizeExplorer')]",
@@ -557,7 +578,19 @@
       "vmSizeDashboard": "[parameters('vmSizeDashboard')]",
       "dashboard": "[parameters('dashboard')]",
       "vmHostNamePrefix": "[parameters('vmHostNamePrefix')]",
-      "jumpbox": "[parameters('jumpbox')]"
+      "jumpbox": "[parameters('jumpbox')]",
+      "graphNodeStorageSettings": {
+        "accountType": "[parameters('vmGraphDiskType')]",
+        "diskSize": "[parameters('vmGraphDiskSize')]"
+      },
+      "metaNodeStorageSettings": {
+        "accountType": "[parameters('vmMetaDiskType')]",
+        "diskSize": "[parameters('vmMetaDiskSize')]"
+      },
+      "storageNodeStorageSettings": {
+        "accountType": "[parameters('vmStorageDiskType')]",
+        "diskSize": "[parameters('vmStorageDiskSize')]"
+      }
     },
     "networkSettings": {
       "name": "[parameters('vNetName')]",
