@@ -39,7 +39,19 @@
   },
   "variables": {
     "namespace": "[parameters('vm').namespace]",
-    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]"
+    "interfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/interface.json', parameters('_artifactsLocationSasToken')))]",
+    "dataDisks": [
+      {
+        "name": "[concat(variables('namespace'), '0', '-datadisk')]",
+        "diskSizeGB": "[parameters('storageSettings').diskSize]",
+        "lun": 0,
+        "managedDisk": {
+          "storageAccountType": "[parameters('storageSettings').accountType]"
+        },
+        "caching": "ReadOnly",
+        "createOption": "Empty"
+      }
+    ]
   },
   "resources": [
     {
@@ -116,18 +128,7 @@
             "value": "[concat(variables('namespace'), 'av-set')]"
           },
           "dataDisks": {
-            "value": [
-              {
-                "name": "[concat(variables('namespace'), copyIndex(), '-datadisk')]",
-                "diskSizeGB": "[parameters('storageSettings').diskSize]",
-                "lun": 0,
-                "managedDisk": {
-                  "storageAccountType": "[parameters('storageSettings').accountType]"
-                },
-                "caching": "ReadOnly",
-                "createOption": "Empty"
-              }
-            ]
+            "value": "[variables('dataDisks')]"
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
