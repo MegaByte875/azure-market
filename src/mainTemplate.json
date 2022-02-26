@@ -678,6 +678,23 @@
     "dashboardInterfaceTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('dashboardInterfaceTemplates')[parameters('dashboard')], parameters('_artifactsLocationSasToken')))]",
     "securityGroupTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/securitygroup.json', parameters('_artifactsLocationSasToken')))]",
     "location": "[parameters('location')]",
+    "dataDiskSizes": {
+      "2GiB": 2,
+      "4GiB": 4,
+      "8GiB": 8,
+      "16GiB": 16,
+      "32GiB": 32,
+      "64GiB": 64,
+      "128GiB": 128,
+      "256GiB": 256,
+      "512GiB": 512,
+      "1TiB": 1024,
+      "2TiB": 2048,
+      "4TiB": 4096,
+      "8TiB": 8192,
+      "16TiB": 16384,
+      "32TiB": 32767
+    },
     "ngSettings": {
       "clusterName": "[parameters('ngClusterName')]",
       "version": "[parameters('ngVersion')]",
@@ -706,15 +723,15 @@
       "jumpbox": "[parameters('jumpbox')]",
       "graphNodeStorageSettings": {
         "accountType": "[parameters('vmGraphDiskType')]",
-        "diskSize": "[parameters('vmGraphDiskSize')]"
+        "diskSize": "[variables('dataDiskSizes')[parameters('vmGraphDiskSize')]]"
       },
       "metaNodeStorageSettings": {
         "accountType": "[parameters('vmMetaDiskType')]",
-        "diskSize": "[parameters('vmMetaDiskSize')]"
+        "diskSize": "[variables('dataDiskSizes')[parameters('vmMetaDiskSize')]]"
       },
       "storageNodeStorageSettings": {
         "accountType": "[parameters('vmStorageDiskType')]",
-        "diskSize": "[parameters('vmStorageDiskSize')]"
+        "diskSize": "[variables('dataDiskSizes')[parameters('vmStorageDiskSize')]]"
       }
     },
     "networkSettings": {
