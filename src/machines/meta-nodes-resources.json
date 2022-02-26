@@ -38,19 +38,7 @@
     }
   },
   "variables": {
-    "namespace": "[parameters('vm').namespace]",
-    "dataDisks": [
-      {
-        "name": "[concat(variables('namespace'), '0', '-datadisk')]",
-        "diskSizeGB": "[parameters('storageSettings').diskSize]",
-        "lun": 0,
-        "managedDisk": {
-          "storageAccountType": "[parameters('storageSettings').accountType]"
-        },
-        "caching": "ReadOnly",
-        "createOption": "Empty"
-      }
-    ]
+    "namespace": "[parameters('vm').namespace]"
   },
   "resources": [
     {
@@ -97,7 +85,18 @@
             "value": "[concat(variables('namespace'), 'av-set')]"
           },
           "dataDisks": {
-            "value": "[variables('dataDisks')]"
+            "value": [
+              {
+                "name": "[concat(variables('namespace'), copyIndex(), '-datadisk')]",
+                "diskSizeGB": "[parameters('storageSettings').diskSize]",
+                "lun": 0,
+                "managedDisk": {
+                  "storageAccountType": "[parameters('storageSettings').accountType]"
+                },
+                "caching": "ReadOnly",
+                "createOption": "Empty"
+              }
+            ]
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
