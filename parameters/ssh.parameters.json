@@ -16,7 +16,7 @@
   "vmSizeMetaNodes":{"value":"Standard_F2s_v2"},
   "vmMetaNodeCount":{"value":3},
   "vmMetaDiskSize":{"value":"8GiB"},
-  "vmMetahDiskType":{"value":"Premium"},
+  "vmMetaDiskType":{"value":"Premium"},
   "vmSizeStorageNodes":{"value":"Standard_F2s_v2"},
   "vmStorageNodeCount":{"value":1},
   "vmStorageDiskSize":{"value":"16GiB"},
