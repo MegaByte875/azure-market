@@ -695,6 +695,10 @@
       "16TiB": 16384,
       "32TiB": 32767
     },
+    "dataDiskType": {
+      "Premium": "Premium_LRS",
+      "Standard": "Standard_LRS"
+    },
     "ngSettings": {
       "clusterName": "[parameters('ngClusterName')]",
       "version": "[parameters('ngVersion')]",
@@ -722,15 +726,15 @@
       "vmHostNamePrefix": "[parameters('vmHostNamePrefix')]",
       "jumpbox": "[parameters('jumpbox')]",
       "graphNodeStorageSettings": {
-        "accountType": "[parameters('vmGraphDiskType')]",
+        "accountType": "[variables('dataDiskType')[parameters('vmGraphDiskType')]]",
         "diskSize": "[variables('dataDiskSizes')[parameters('vmGraphDiskSize')]]"
       },
       "metaNodeStorageSettings": {
-        "accountType": "[parameters('vmMetaDiskType')]",
+        "accountType": "[variables('dataDiskType')[parameters('vmMetaDiskType')]]",
         "diskSize": "[variables('dataDiskSizes')[parameters('vmMetaDiskSize')]]"
       },
       "storageNodeStorageSettings": {
-        "accountType": "[parameters('vmStorageDiskType')]",
+        "accountType": "[variables('dataDiskType')[parameters('vmStorageDiskType')]]",
         "diskSize": "[variables('dataDiskSizes')[parameters('vmStorageDiskSize')]]"
       }
     },
