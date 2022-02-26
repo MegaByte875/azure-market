@@ -85,16 +85,18 @@
             "value": "[concat(variables('namespace'), 'av-set')]"
           },
           "dataDisks": {
-            "value": {
-              "name": "[concat(variables('namespace'), copyIndex(), '-datadisk')]",
-              "diskSizeGB": "[parameters('storageSettings').diskSize]",
-              "lun": 0,
-              "managedDisk": {
-                "storageAccountType": "[parameters('storageSettings').accountType]"
-              },
-              "caching": "ReadOnly",
-              "createOption": "Empty"
-            }
+            "value": [
+              {
+                "name": "[concat(variables('namespace'), copyIndex(), '-datadisk')]",
+                "diskSizeGB": "[parameters('storageSettings').diskSize]",
+                "lun": 0,
+                "managedDisk": {
+                  "storageAccountType": "[parameters('storageSettings').accountType]"
+                },
+                "caching": "ReadOnly",
+                "createOption": "Empty"
+              }
+            ]
           },
           "nebulaTags": {
             "value": "[parameters('nebulaTags')]"
