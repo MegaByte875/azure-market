@@ -57,8 +57,10 @@ META_SERVER_ADDRESS="127.0.0.1:9559"
 FLAG_LOCAL_IP="--local_ip"
 FLAG_META_SERVER_ADDRESS="--meta_server_addrs"
 FLAG_DATA_PATH="--data_path"
+FLAG_LOG_PATH="--log_path"
 
 DISK_DATA_PATH="/usr/local/nebula/data"
+DISK_LOG_PATH="/usr/local/nebula/log"
 
 SYSTEMD_PATH="/usr/lib/systemd/system"
 
@@ -230,6 +232,9 @@ configure_graphd()
   log "[configure_graphd] configure nebula-graphd.conf file"
   local GRAPHD_CONF="/usr/local/nebula/etc/nebula-graphd.conf"
 
+  if [ -d "/datadisks" ]; then
+    sed -i "s/${FLAG_LOG_PATH}.*/${FLAG_LOG_PATH}=$(echo "${DISK_LOG_PATH}/graphd" |sed -e 's/\//\\\//g')/" $GRAPHD_CONF
+  fi
   configure_common_flag $GRAPHD_CONF
 }
 
@@ -239,7 +244,8 @@ configure_metad()
   local METAD_CONF="/usr/local/nebula/etc/nebula-metad.conf"
 
   if [ -d "/datadisks" ]; then
-    sed -i "s/${FLAG_DATA_PATH}.*/${FLAG_DATA_PATH}=$(echo "${DISK_DATA_PATH}/meta" |sed -e 's/\//\\\//g')/" $METAD_CONF
+    sed -i "s/${FLAG_DATA_PATH}.*/${FLAG_DATA_PATH}=$(echo "${DISK_DATA_PATH}/metad" |sed -e 's/\//\\\//g')/" $METAD_CONF
+    sed -i "s/${FLAG_LOG_PATH}.*/${FLAG_LOG_PATH}=$(echo "${DISK_LOG_PATH}/metad" |sed -e 's/\//\\\//g')/" $METAD_CONF
   fi
 
   configure_common_flag $METAD_CONF
@@ -252,6 +258,7 @@ configure_storaged()
 
   if [ -d "/datadisks" ]; then
     sed -i "s/${FLAG_DATA_PATH}.*/${FLAG_DATA_PATH}=$(echo "${DISK_DATA_PATH}/storaged" |sed -e 's/\//\\\//g')/" $STORAGED_CONF
+    sed -i "s/${FLAG_LOG_PATH}.*/${FLAG_LOG_PATH}=$(echo "${DISK_LOG_PATH}/storaged" |sed -e 's/\//\\\//g')/" $STORAGED_CONF
   fi
 
   configure_common_flag $STORAGED_CONF
