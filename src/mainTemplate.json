@@ -516,12 +516,6 @@
         "description": "Password for the built-in 'nebula' user. Should be 12 characters or more, with a minimum of 6 characters"
       }
     },
-    "securityDashboardPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the built-in 'dashboard_admin' user. Should be 12 characters or more, with a minimum of 6 characters"
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -704,7 +698,6 @@
       "version": "[parameters('ngVersion')]",
       "licenseBlob": "[parameters('ngLicenseBlob')]",
       "securityAdminPwd": "[parameters('securityAdminPassword')]",
-      "securityDashboardPwd": "[parameters('securityDashboardPassword')]"
     },
     "networkResourceGroupMap": {
       "new": "[resourceGroup().name]",
