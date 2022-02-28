@@ -663,7 +663,7 @@
                 "toolTip": "Choose VM SKU, Standard D3, D4",
                 "visible": "[equals(steps('externalAccessStep').studioSection.studio, 'Yes')]",
                 "recommendedSizes": [
-                  "Standard_D2s_v3",
+                  "Standard_B2s",
                   "Standard_D2as_v4"
                 ],
                 "constraints": {
@@ -755,7 +755,7 @@
                 "toolTip": "Choose VM SKU, Standard D3, D4",
                 "visible": "[equals(steps('externalAccessStep').explorerSection.explorer, 'Yes')]",
                 "recommendedSizes": [
-                  "Standard_D2s_v3",
+                  "Standard_B2s",
                   "Standard_D2as_v4"
                 ],
                 "constraints": {
@@ -987,30 +987,6 @@
                 }
               }
             ]
-          },
-          {
-            "name": "ng_dashboard",
-            "type": "Microsoft.Common.Section",
-            "label": "Dashboard user account",
-            "elements": [
-              {
-                "name": "securityDashboardPassword",
-                "type": "Microsoft.Common.PasswordBox",
-                "label": {
-                  "password": "'dashboard_admin' built-in user password",
-                  "confirmPassword": "Confirm password"
-                },
-                "toolTip": "Password for the built-in 'dashboard_admin' user. This is a built-in account that access Dashboard.",
-                "constraints": {
-                  "required": false,
-                  "regex": "^.{12,}",
-                  "validationMessage": "Password must be at least 12 characters long"
-                },
-                "options": {
-                  "hideConfirmation": false
-                }
-              }
-            ]
           }
         ]
       }
@@ -1052,7 +1028,6 @@
       "adminPassword": "[basics('password').password]",
       "sshPublicKey": "[basics('password').sshPublicKey]",
       "securityAdminPassword": "[steps('securityStep').ng_admin.securityAdminPassword]",
-      "securityDashboardPassword": "[steps('securityStep').ng_dashboard.securityDashboardPassword]",
       "appGatewayTier": "[steps('externalAccessStep').externalAccessSection.appGatewayTier]",
       "appGatewayCertBlob": "",
       "appGatewayCertPassword": "",
